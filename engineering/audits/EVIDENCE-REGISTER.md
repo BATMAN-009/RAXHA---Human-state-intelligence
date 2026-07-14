@@ -1,0 +1,29 @@
+# Evidence Register (living)
+
+> **"What do we actually know?" — not "what have we written?"** Every load-bearing assumption, its evidence, its status, and the action that changes it. **Status taxonomy (refined 2026-07-14):** ✅ **Verified** (supported by evidence) · ❌ **False** (proven incorrect) · 🔄 **Revised** (a better understanding replaced the original — typically business/product assumptions; distinct from ❌ so the register never misleads) · 🔴 **Unknown** (needs experiment) · 🟡 **Partial** (evidence incomplete). ❌ and 🔄 rows are kept forever (they earned RFCs). Complements the Validation Assumptions Register (13 §VA — assumptions *underlying tests*); this register covers *platform + product* assumptions. Maintained by the Principal Systems Investigator; updated per spike/experiment. **Workflow rule: notebook → evidence → conclusion → register update; polished markdown only once stable.** No row is upgraded to ✅ by argument — only by sourced evidence.
+
+| # | Assumption | Evidence / Source | Status | Next action | Decides |
+|---|---|---|---|---|---|
+| E-01 | Apple opens its own fall UI first; app then gets background time + event **with resolution** | Apple docs + dev forums (SPIKE-001 F1) | ✅ | Measure real delivery latency on-device | RFC-002 (confirmed) |
+| E-02 | Fall-detection entitlement obtainable quickly | Community reports ~2–3 days (SPIKE-001 F1) | 🟡 | **File A1 now**; record actual turnaround | H1 |
+| E-03 | Critical-alerts entitlement fits RAXHA's case | Apple docs: personal-safety/SOS approved category (SPIKE-001 F6) | ✅ docs / 🟡 grant | File A1 (both); record outcome | H1, IF-HUM-04 |
+| E-04 | `CMSensorRecorder` usable as live confirmer | Apple docs: retrospective batches; flaky long-window retrieval | ❌ **False** | none — design moved | RFC-001 ✅ earned |
+| E-05 | Own high-rate sensing possible always-on | WWDC23: `CMBatchedSensorManager` requires active workout session; Series 8+ | ❌ **False** (armed-modes only) | SPIKE-009 endurance test | RFC-001 carve-out |
+| E-06 | Family Setup supports RAXHA's shape | Apple: requires **LTE watch**, no companion iPhone, independent watch apps installable | 🟡 | **SPIKE-002 (hardware)** — fall-detection API on managed watch | RFC-004, RFC-005 |
+| E-07 | Fall-detection API works on Family Setup managed watch | none | 🔴 | SPIKE-002 — the single most decision-heavy unknown | RFC-005 / possibly the whole v1 shape |
+| E-08 | HealthKit real-time reads work on independent watch app w/o iPhone | Mixed dev reports (SPIKE-001 F5) | 🟡 | SPIKE-002 sub-test | RFC-005 architecture |
+| E-09 | The beachhead elder already owns Apple Watch + iPhone | Market reality (AUDIT-001 C5) | 🔄 **Revised** (business assumption replaced: funnel = adult-child-buys-bundle) | RFC-005 funnel remodel; pricing research | PDR-001/002 funnel |
+| E-10 | Night coverage exists with one watch | Physics of nightly charging (AUDIT-001 C3) | ❌ **False** structurally | RFC-004 decision (routine/fallback/positioning) | PRD promise scope |
+| E-11 | Context confidence-lowering cannot suppress a real event | SRS-403 as written (AUDIT-001 C4) | ❌ loophole confirmed by inspection | RFC-003 floor rule + VV-102 degraded-path test | D17 integrity |
+| E-12 | Acknowledgment ≈ help delivered | Pendant-industry behavior (AUDIT-001 H4) | ❌ **False** | Post-ack outcome-loop workstream | Response-layer moat |
+| E-13 | Automated voice/SMS reach a 3 a.m. phone | STIR/SHAKEN + A2P filtering realities (H5) | 🟡 risk-confirmed | **A2 registrations** + SPIKE-007 deliverability test | Ladder reliability |
+| E-14 | Always-on battery budget holds on Series-4-class | Bench estimates only (TD-7) | 🔴 | SPIKE-003 profiling matrix | Hardware floor, PRD claims |
+| E-15 | Watch/phone reboot → RAXHA relaunches + journal recovers | Designed (ADR-105); untested on hardware | 🔴 | SPIKE-005 | VV-106/201 reality |
+| E-16 | Background execution windows suffice for the coordinator role | Docs qualitative; timing unmeasured | 🔴 | SPIKE-004 timing instrumentation | RFC-001 detail, latency budget |
+| E-17 | Shadow mode can measure *sensitivity* at v1 scale | Statistics: ~100 users ⇒ a handful of real falls/yr (H6) | ❌ **False** | Cold-start VV-402/403 gate variants | 13's exit gates |
+| E-18 | **SisFall** usable for replay corpus | [MDPI, open dataset](https://www.mdpi.com/1424-8220/17/1/198): 19 ADL + 15 fall types; falls performed by **young adults**; elders (62+) did ADLs only; belt-worn device, not wrist | ✅ available / 🟡 wrist+age gap | Ingest for ADL/false-positive classes; never claim elderly-fall validation from it | SPIKE-010, VA-02 |
+| E-19 | **MobiAct** usable for corpus | Smartphone-based, **20 Hz** sampling, 4 fall types (request-based access) | 🟡 | Low value: 20 Hz too coarse for impact detail; deprioritize | SPIKE-010 |
+| E-20 | **FARSEEING** real-world elderly falls obtainable | [208 verified real-world falls, shared **on request** to consortium](https://link.springer.com/article/10.1186/s11556-016-0168-9) | 🟡 | **New action A4: founder emails the FARSEEING consortium** (research-collaboration request; lead time unknown) | SPIKE-010 — the only real-elderly-fall ground truth in existence |
+| E-21 | Elders will wear + charge the watch daily | Unknown for our population (doctrine D14's #1 fear) | 🔴 | Alpha/beta coverage telemetry — cannot be desk-verified | Everything |
+
+**Register rules:** a 🔴 row blocking an RFC decision gets a spike; every ❌/🔄 row must point at its RFC/workstream; no row may be upgraded to ✅ by argument — only by evidence with a source. *(Taxonomy note: the six ❌ rows are genuine falsified technical claims; E-09 alone is 🔄 — a business assumption that a better understanding replaced, not a proven-wrong fact. Keeping them distinct is what stops the register from misleading.)*
