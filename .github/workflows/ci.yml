@@ -35,6 +35,7 @@ jobs:
         run: swift run raxha-harness --corpus harness/corpus --evidence harness/evidence/ci-${{ matrix.os }}
 
       - name: Upload evidence package
+        if: always() # a FAILING rig's evidence is exactly the evidence we need
         uses: actions/upload-artifact@v4
         with:
           name: vv-evidence-${{ matrix.os }}

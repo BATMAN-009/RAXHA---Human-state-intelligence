@@ -1,0 +1,50 @@
+{
+  "evidencePackage" : "determinism report (hash comparison)",
+  "note" : "Phase-0 scope: same-machine repeatability across 3 fresh runs per trace. Cross-platform bit-identity (macOS vs Windows CI) is asserted once CI has both runners.",
+  "runAt" : "2026-07-14T19:28:43Z",
+  "status" : "PASS",
+  "toolchain" : "swift-windows",
+  "traces" : [
+    {
+      "hashes" : [
+        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
+        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
+        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf"
+      ],
+      "identical" : true,
+      "runs" : 3,
+      "traceId" : "trace-001-platform-fall-unresponsive"
+    },
+    {
+      "hashes" : [
+        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0",
+        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0",
+        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0"
+      ],
+      "identical" : true,
+      "runs" : 3,
+      "traceId" : "trace-002-fall-wearer-cancels"
+    },
+    {
+      "hashes" : [
+        "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481",
+        "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481",
+        "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481"
+      ],
+      "identical" : true,
+      "runs" : 3,
+      "traceId" : "trace-003-adl-quiet-day"
+    },
+    {
+      "hashes" : [
+        "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
+        "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
+        "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17"
+      ],
+      "identical" : true,
+      "runs" : 3,
+      "traceId" : "trace-004-gap-markers"
+    }
+  ],
+  "vv" : "VV-101"
+}

@@ -41,12 +41,17 @@ struct ContractSchemas {
 
     /// Portable numeric extraction: JSONSerialization yields NSNumber on Darwin but may
     /// yield native Int/Double under swift-corelibs-foundation (Windows/Linux).
+    /// CAUTION: `json is Bool` is NOT a safe boolean test — NSNumber values of exactly
+    /// 0 or 1 pass it, which misclassified quality 0.0 / risk 1.0 / seq 1 as booleans
+    /// (caught by VV-110's very first run). objCType "c" is the reliable discriminator.
     private func numericValue(_ json: Any) -> Double? {
-        if json is Bool { return nil }
+        if let n = json as? NSNumber {
+            if String(cString: n.objCType) == "c" { return nil } // genuine JSON boolean
+            return n.doubleValue
+        }
         if let i = json as? Int { return Double(i) }
         if let i = json as? Int64 { return Double(i) }
         if let d = json as? Double { return d }
-        if let n = json as? NSNumber { return n.doubleValue }
         return nil
     }
 
