@@ -1,0 +1,28 @@
+# Line-ending normalization — this is a DETERMINISM control, not cosmetics.
+#
+# Notebook B-01 records the unexpected truth that VV-101 decision-log hashes came out
+# bit-identical across Windows (local), macOS CI, and Windows CI. That property is the
+# foundation of ADR-109 (replay determinism) and the VV-101 release gate.
+#
+# Git's default autocrlf behaviour rewrites line endings per-platform on checkout. Any
+# byte-wise comparison of corpus inputs or evidence artifacts across a Windows dev box
+# and a macOS runner would then silently diverge — determinism would die quietly, which
+# is exactly the class of failure D20 warns about (a broken gate that still looks green).
+#
+# Therefore: LF everywhere, in the repo AND in every working tree, on every platform.
+
+* text=auto eol=lf
+
+# Everything the harness reads, hashes, or emits — pinned explicitly.
+*.swift  text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.sh     text eol=lf
+
+# Never touch binaries.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.zip binary

@@ -20,14 +20,14 @@ jobs:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5 # v4 targets Node 20 (deprecated on runners)
 
       - name: Install Swift (Windows)
         if: runner.os == 'Windows'
         uses: compnerd/gha-setup-swift@main
         with:
-          branch: swift-6.3.3-release
-          tag: 6.3.3-RELEASE
+          swift-version: swift-6.3.3-release
+          swift-build: 6.3.3-RELEASE # 'tag' input is deprecated -> 'swift-build'
 
       - name: Build
         run: swift build
@@ -40,7 +40,8 @@ jobs:
 
       - name: Upload evidence package
         if: always() # a FAILING rig's evidence is exactly the evidence we need
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5 # v4 targets Node 20 (deprecated on runners)
         with:
           name: vv-evidence-${{ matrix.os }}
           path: implementation/harness/evidence/ci-${{ matrix.os }}
+          retention-days: 90 # evidence packages are the regulatory artifact (B14) - keep them
