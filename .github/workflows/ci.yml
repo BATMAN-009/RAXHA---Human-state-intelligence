@@ -1,12 +1,16 @@
 # CI-as-evidence (B14; ADR-109): every push must rebuild the pure core, pass the unit
 # suite, and re-run the Phase-0 rigs. Evidence artifacts are uploaded on every run.
-# NOTE: authored at Phase 0; ACTIVATES when this repo gets a GitHub remote. Until then,
-# the same gates run locally: swift build && swift test && swift run raxha-harness.
+# Repo is a monorepo (academy/ + engineering/ + implementation/); the Swift package
+# lives in implementation/, so all run-steps execute there.
 name: ci
 
 on:
   push:
   pull_request:
+
+defaults:
+  run:
+    working-directory: implementation
 
 jobs:
   build-test-evidence:
@@ -39,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vv-evidence-${{ matrix.os }}
-          path: harness/evidence/ci-${{ matrix.os }}
+          path: implementation/harness/evidence/ci-${{ matrix.os }}

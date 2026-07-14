@@ -1,32 +1,26 @@
-# RAXHA Implementation
+# RAXHA
 
-> **The sticky note (read before every session):**
-> **Ship the smallest system that can earn real trust. Measure everything. Believe evidence over intuition. Preserve history. Earn the right to expand.**
->
-> Two logbooks live here from day one: [Notebook A — assumptions disproven](NOTEBOOK-A-ASSUMPTIONS-DISPROVEN.md) · [Notebook B — unexpected truths](NOTEBOOK-B-UNEXPECTED-TRUTHS.md). AI's role in this tier: **pair architect, not autonomous builder** — design reviews, trade-off analysis, audits, failure analysis, RFC critiques; architecture and implementation decisions stay with the founder.
-
-> **Status: PHASE 0 IN PROGRESS** (begun 2026-07-15 on the founder's explicit "start building" instruction in session; scoped to the RFC-invariant subset — pure core, frozen 08B objects, FSM, ports, replay harness, CI). Founder queue still open, tracked not blocking (per [Certificate 15](../engineering/15-ENGINEERING-READINESS-CERTIFICATE.md) and the [RFC register](../engineering/rfcs/RFC-REGISTER.md) sequencing note): ① sign Certificate 15 (line remains blank — no AI signs it), ② decide RFC-001…007 (RFC-001/-002 shape the fall path's entry conditions, which are deliberately NOT coded yet), ③ Competency-15 answers (Academy freeze; not a code blocker), ④ actions A1–A4. Everything needed to build already exists in `../engineering/` — this tier adds no design documents, only code and the evidence it generates.
-
-## Phase 0 — the first work (per Roadmap 14 Part A/B)
+Three separated concerns, three lifecycles. This split (2026-07-14) mirrors how mature organizations keep teaching, design, and code from contaminating each other.
 
 ```
-implementation/
-├── core/            RaxhaCore — PURE (zero platform imports; ADR-011)
-│   ├── domain/      HumanState, Incident, EscalationState, RiskScore… (exactly the 08B objects)
-│   ├── fsm/         Escalation FSM (write-ahead, persisted deadlines — ADR-105)
-│   ├── state/       Human State Engine (ADR-102)
-│   ├── risk/        Risk Engine v0 (rule-based — TD-1)
-│   ├── policy/      Policy Engine (deterministic; veto contract structural — ADR-104)
-│   └── ports/       MotionSource, VitalsSource, LocationSource, Clock, PeerLink,
-│                    AlertTransport, HealthRecordStore, Inference (from B13/12)
-├── harness/         Replay harness + trace corpus (VV-101/110 live here — Phase 0's exit gate)
-├── mobile/          (Phase 1+) watchOS/iOS apps — adapters implementing the ports
-├── backend/         (Phase 6+) Delivery & Coordination
-└── shared/          contracts/schemas generated from 08B — never hand-redefined
+RAXHA/
+├── academy/          Teaching assets — the philosophy & science. FREEZES (RFC-only after v1.0).
+├── engineering/      Living design documents — what will be built. Evolves under governance.
+└── implementation/   Source code (empty until the doc set is complete).
 ```
 
-**Phase 0 exit gate (no progression without it):** VV-101 (determinism rig) and VV-110 (contract rig) operational and producing evidence artifacts. Then Phase 1 (Sensing) per 14 Part B.
+| Tier | Purpose | Changes | Authority |
+|---|---|---|---|
+| **academy/** | Teaches the science, doctrine, and philosophy (16-module curriculum, Doctrine D01–D22, Canon). | Rarely; frozen at v1.0, edited only via Academy RFC. | The **source of the Doctrine & Canon** that engineering derives from. |
+| **engineering/** | Defines *what will be built* — North Star → PRD → PDR → ADR → Blueprint → SRS → Safety → API → V&V → Roadmap. | Actively, but the **foundation is locked** (see `engineering/00-foundation/00A-FOUNDATION-LOCK.md`); conflicts → RFC. | Derives from academy's Doctrine/Canon. |
+| **implementation/** | The actual mobile + backend + shared code. | Continuously, once started. | Derives from engineering specs. |
 
-**Standing rules in force here:** frozen vocabulary only (08B-A) · every I/O behind a port (ADR-011) · no LLM in the decision path (D03/ADR-008) · foundation conflicts become RFCs, never workarounds (00A) · the quality of this code is measured by whether it satisfies the contracts (12), tests (13), and evidence requirements — not by elegance.
+**Dependency direction (never reversed):** implementation → engineering → academy. Code obeys the specs; specs obey the doctrine.
 
-**Before every tempting shortcut, one question:** *Am I paying down uncertainty, or borrowing against it?* Borrowing is sometimes right — startups do it — but every borrow is **written down** (TD register, 14 Part D). Undocumented debt is the only kind that's forbidden.
+**When reality disagrees with Engineering (the inter-tier protocol):** don't change code first; don't change doctrine first — **trace the disagreement.** Ask, in order: *Was the assumption wrong? Was the architecture wrong? Was the implementation wrong? Was the requirement wrong?* The answer — not the urgency — determines which layer changes, and it changes via an RFC (+ a Notebook-A entry). Treating a disagreement as the beginning of v1.1, not as failure, is what keeps all three layers healthy.
+
+**The asset to protect above all:** traceability. Today, any subsystem can answer *why do I exist → which doctrine created me → which hazard requires me → which requirement specifies me → which test proves me.* Very few products can. Every shortcut is measured against whether it preserves that property.
+
+**Eventual repository split (when coding starts):** `raxha-academy` (docs only), `raxha-engineering` (design docs only), `raxha-platform` (source). This folder layout is the pre-repo staging of that separation.
+
+**Start here:** [engineering/README.md](engineering/README.md) for the design-document sequence; [academy/README.md](academy/README.md) for the philosophy and its freeze policy.
