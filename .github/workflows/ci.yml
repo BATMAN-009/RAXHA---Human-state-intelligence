@@ -20,7 +20,7 @@ jobs:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5 # v4 targets Node 20 (deprecated on runners)
+      - uses: actions/checkout@v7 # current major; v4/v5 target the deprecated Node 20
 
       - name: Install Swift (Windows)
         if: runner.os == 'Windows'
@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload evidence package
         if: always() # a FAILING rig's evidence is exactly the evidence we need
-        uses: actions/upload-artifact@v5 # v4 targets Node 20 (deprecated on runners)
+        uses: actions/upload-artifact@v7 # current major; v4/v5 target the deprecated Node 20
         with:
           name: vv-evidence-${{ matrix.os }}
           path: implementation/harness/evidence/ci-${{ matrix.os }}
