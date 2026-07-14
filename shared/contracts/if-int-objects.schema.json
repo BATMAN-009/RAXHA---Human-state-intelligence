@@ -1,0 +1,130 @@
+{
+  "$comment": "Machine-readable transcription of 08B Part B for the objects crossing IF-INT-01…06 (12 §1). SOURCE OF TRUTH remains engineering/02-architecture/08B-DATA-DICTIONARY.md — this file transcribes it and never redefines it (implementation/README standing rule). Contract version: v1 for every interface (12 dependency matrix). The VV-110 rig validates every object crossing an internal interface against these definitions. RFC-006's proposed DeviceCoverage field is absent pending founder decision.",
+  "contractVersions": {
+    "IF-INT-01": { "object": "SensorEvidence", "version": "v1", "semantics": "best-effort stream with explicit gap markers" },
+    "IF-INT-02": { "object": "HumanState", "version": "v1", "semantics": "latest-value (+ staleness)" },
+    "IF-INT-03": { "object": "RiskScore", "version": "v1", "semantics": "per-evaluation, deterministic" },
+    "IF-INT-04": { "object": "PolicyDecision", "version": "v1", "semantics": "exactly-once-effect (idempotent by decision id)" },
+    "IF-INT-05": { "object": "Incident+EscalationState", "version": "v1", "semantics": "write-ahead durable; reboot-recoverable" },
+    "IF-INT-06": { "object": "DeviceCoverage", "version": "v1", "semantics": "latest-value" }
+  },
+  "definitions": {
+    "Timestamp": {
+      "type": "object",
+      "required": ["monotonicMs", "wallMs"],
+      "properties": {
+        "monotonicMs": { "type": "integer" },
+        "wallMs": { "type": "integer" }
+      }
+    },
+    "Confidence": {
+      "type": "object",
+      "required": ["value", "calibrationMethod", "calibrationVersion", "basis"],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "calibrationMethod": { "type": "string", "enum": ["temperature", "isotonic", "none"] },
+        "calibrationVersion": { "type": "string" },
+        "basis": { "type": "string", "enum": ["measured", "inferred", "cold_start"] }
+      }
+    },
+    "SensorEvidence": {
+      "type": "object",
+      "required": ["id", "wearerId", "source", "kind", "values", "unit", "quality", "confidence", "measuredAt", "receivedAt"],
+      "properties": {
+        "id": { "type": "string" },
+        "wearerId": { "type": "string" },
+        "source": { "type": "string", "enum": ["onboard_sensor", "platform_detection", "derived"] },
+        "kind": { "type": "string", "enum": ["motion", "rotation", "orientation", "heart_rate", "hrv", "location", "pressure", "on_body", "platform_fall", "gap"] },
+        "values": { "type": "array" },
+        "unit": { "type": "string" },
+        "quality": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence": { "$ref": "Confidence" },
+        "measuredAt": { "$ref": "Timestamp" },
+        "receivedAt": { "$ref": "Timestamp" }
+      }
+    },
+    "HumanState": {
+      "type": "object",
+      "required": ["wearerId", "at", "posture", "motion", "physiology", "placeContext", "confidence", "contributingEvidence", "baselineMaturity"],
+      "properties": {
+        "wearerId": { "type": "string" },
+        "at": { "$ref": "Timestamp" },
+        "posture": { "type": "string", "enum": ["upright", "sitting", "lying", "unknown"] },
+        "motion": { "type": "string", "enum": ["still", "walking", "active", "vehicle", "unknown"] },
+        "physiology": { "type": "object" },
+        "placeContext": { "type": "string", "enum": ["home", "known", "unknown", "unavailable"] },
+        "confidence": { "$ref": "Confidence" },
+        "contributingEvidence": { "type": "array" },
+        "baselineMaturity": { "type": "string", "enum": ["cold_start", "calibrating", "established"] }
+      }
+    },
+    "RiskScore": {
+      "type": "object",
+      "required": ["id", "wearerId", "at", "value", "severity", "humanStateRef", "candidates", "rationale", "modelVersion", "thresholdVersion", "confidence"],
+      "properties": {
+        "id": { "type": "string" },
+        "wearerId": { "type": "string" },
+        "at": { "$ref": "Timestamp" },
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "severity": { "type": "string", "enum": ["low", "moderate", "high", "critical"] },
+        "humanStateRef": { "$ref": "Timestamp" },
+        "candidates": { "type": "array" },
+        "rationale": { "type": "array" },
+        "modelVersion": { "type": "string", "minLength": 1 },
+        "thresholdVersion": { "type": "string", "minLength": 1 },
+        "confidence": { "$ref": "Confidence" }
+      }
+    },
+    "PolicyDecision": {
+      "type": "object",
+      "required": ["id", "riskRef", "action", "rationale", "policyVersion", "decidedAt", "trustCost"],
+      "properties": {
+        "id": { "type": "string" },
+        "riskRef": { "type": "string" },
+        "action": { "type": "string", "enum": ["none", "observe", "check_in", "countdown", "alert", "escalate"] },
+        "countdownSeconds": { "type": "integer" },
+        "rationale": { "type": "string", "minLength": 1 },
+        "policyVersion": { "type": "string", "minLength": 1 },
+        "decidedAt": { "$ref": "Timestamp" },
+        "trustCost": { "type": "string", "enum": ["none", "low", "high"] }
+      }
+    },
+    "EscalationState": {
+      "type": "object",
+      "required": ["state", "enteredAt", "seq", "fsmVersion"],
+      "properties": {
+        "state": { "type": "string", "enum": ["IDLE", "SUSPECTED", "COUNTDOWN", "ALERTING", "ACKNOWLEDGED", "ESCALATING", "RESOLVED"] },
+        "enteredAt": { "$ref": "Timestamp" },
+        "deadlineAt": { "$ref": "Timestamp" },
+        "seq": { "type": "integer" },
+        "fsmVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "TransitionRecord": {
+      "type": "object",
+      "required": ["from", "to", "input", "at", "seq", "fsmVersion"],
+      "properties": {
+        "from": { "type": "string", "enum": ["IDLE", "SUSPECTED", "COUNTDOWN", "ALERTING", "ACKNOWLEDGED", "ESCALATING", "RESOLVED"] },
+        "to": { "type": "string", "enum": ["IDLE", "SUSPECTED", "COUNTDOWN", "ALERTING", "ACKNOWLEDGED", "ESCALATING", "RESOLVED"] },
+        "input": {},
+        "at": { "$ref": "Timestamp" },
+        "seq": { "type": "integer" },
+        "fsmVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "DeviceCoverage": {
+      "type": "object",
+      "required": ["wearerId", "at", "protection", "wornState", "battery", "links", "permissions", "gaps"],
+      "properties": {
+        "wearerId": { "type": "string" },
+        "at": { "$ref": "Timestamp" },
+        "protection": { "type": "string", "enum": ["protected", "degraded", "unprotected"] },
+        "wornState": { "type": "string", "enum": ["worn", "off", "unknown"] },
+        "battery": { "type": "object" },
+        "links": { "type": "object" },
+        "permissions": { "type": "object" },
+        "gaps": { "type": "array" }
+      }
+    }
+  }
+}

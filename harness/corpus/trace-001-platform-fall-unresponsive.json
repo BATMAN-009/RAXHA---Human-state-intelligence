@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-001-platform-fall-unresponsive",
+  "description": "SYNTHETIC (TD-4). Platform fall detection, wearer never responds: expects SUSPECTED -> COUNTDOWN -> ALERTING -> ESCALATING -> RESOLVED(contact_ack). Exercises the full unattended escalation ladder.",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000101",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.7],
+        "unit": "activity_index",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1050, "wallMs": 1784073601050 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000102",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "platform_detection",
+        "kind": "platform_fall",
+        "values": [1.0],
+        "unit": "detection",
+        "quality": 0.95,
+        "confidence": { "value": 0.9, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+        "receivedAt": { "monotonicMs": 5010, "wallMs": 1784073605010 }
+      }
+    },
+    { "at": { "monotonicMs": 40000, "wallMs": 1784073640000 }, "action": "tick" },
+    { "at": { "monotonicMs": 170000, "wallMs": 1784073770000 }, "action": "tick" },
+    { "at": { "monotonicMs": 175000, "wallMs": 1784073775000 }, "action": "resolveContactAck" }
+  ]
+}

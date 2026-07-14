@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-003-adl-quiet-day",
+  "description": "SYNTHETIC (TD-4). Ordinary daily activity, no candidate events: expects zero FSM movement and only low-risk scores (the VV-104 direction, scaffolding scale).",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000301",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.8],
+        "unit": "activity_index",
+        "quality": 0.95,
+        "confidence": { "value": 0.85, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1050, "wallMs": 1784073601050 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 30000, "wallMs": 1784073630000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000302",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "heart_rate",
+        "values": [72.0],
+        "unit": "bpm",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 30000, "wallMs": 1784073630000 },
+        "receivedAt": { "monotonicMs": 30100, "wallMs": 1784073630100 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 60000, "wallMs": 1784073660000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000303",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.3],
+        "unit": "activity_index",
+        "quality": 0.95,
+        "confidence": { "value": 0.85, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 60000, "wallMs": 1784073660000 },
+        "receivedAt": { "monotonicMs": 60050, "wallMs": 1784073660050 }
+      }
+    }
+  ]
+}

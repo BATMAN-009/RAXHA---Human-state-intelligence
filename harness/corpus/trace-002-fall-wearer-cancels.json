@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-002-fall-wearer-cancels",
+  "description": "SYNTHETIC (TD-4). Platform fall detection, wearer cancels during countdown: expects COUNTDOWN -> IDLE and no alert. The user_cancel path is a future shadow-mode label (D08).",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000201",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.2],
+        "unit": "activity_index",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1050, "wallMs": 1784073601050 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000202",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "platform_detection",
+        "kind": "platform_fall",
+        "values": [1.0],
+        "unit": "detection",
+        "quality": 0.92,
+        "confidence": { "value": 0.85, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+        "receivedAt": { "monotonicMs": 5010, "wallMs": 1784073605010 }
+      }
+    },
+    { "at": { "monotonicMs": 20000, "wallMs": 1784073620000 }, "action": "wearerCancel" },
+    {
+      "at": { "monotonicMs": 60000, "wallMs": 1784073660000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000203",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.6],
+        "unit": "activity_index",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 60000, "wallMs": 1784073660000 },
+        "receivedAt": { "monotonicMs": 60050, "wallMs": 1784073660050 }
+      }
+    }
+  ]
+}

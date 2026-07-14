@@ -1,0 +1,41 @@
+# CI-as-evidence (B14; ADR-109): every push must rebuild the pure core, pass the unit
+# suite, and re-run the Phase-0 rigs. Evidence artifacts are uploaded on every run.
+# NOTE: authored at Phase 0; ACTIVATES when this repo gets a GitHub remote. Until then,
+# the same gates run locally: swift build && swift test && swift run raxha-harness.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test-evidence:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Swift (Windows)
+        if: runner.os == 'Windows'
+        uses: compnerd/gha-setup-swift@main
+        with:
+          branch: swift-6.3.3-release
+          tag: 6.3.3-RELEASE
+
+      - name: Build
+        run: swift build
+
+      - name: Unit tests (L0)
+        run: swift test
+
+      - name: Replay rigs (VV-101 + VV-110)
+        run: swift run raxha-harness --corpus harness/corpus --evidence harness/evidence/ci-${{ matrix.os }}
+
+      - name: Upload evidence package
+        uses: actions/upload-artifact@v4
+        with:
+          name: vv-evidence-${{ matrix.os }}
+          path: harness/evidence/ci-${{ matrix.os }}

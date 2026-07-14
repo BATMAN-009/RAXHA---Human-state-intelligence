@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-004-gap-markers",
+  "description": "SYNTHETIC (TD-4). Sensing gap mid-trace: the gap marker must widen the Human State back to unknown (loss is never silent, D13; the VV-105 direction, scaffolding scale).",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000401",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "heart_rate",
+        "values": [68.0],
+        "unit": "bpm",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1100, "wallMs": 1784073601100 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 20000, "wallMs": 1784073620000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000402",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "derived",
+        "kind": "gap",
+        "values": [],
+        "unit": "marker",
+        "quality": 0.0,
+        "confidence": { "value": 0.0, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 20000, "wallMs": 1784073620000 },
+        "receivedAt": { "monotonicMs": 20000, "wallMs": 1784073620000 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 90000, "wallMs": 1784073690000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000403",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.4],
+        "unit": "activity_index",
+        "quality": 0.85,
+        "confidence": { "value": 0.75, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 90000, "wallMs": 1784073690000 },
+        "receivedAt": { "monotonicMs": 90050, "wallMs": 1784073690050 }
+      }
+    }
+  ]
+}
