@@ -25,6 +25,7 @@ struct ReplayResult {
     var risks: [RiskScore] = []
     var decisions: [PolicyDecision] = []
     var journal: [TransitionRecord] = []
+    var incidents: [Incident] = []
     var finalEscalation: EscalationState
 }
 
@@ -46,15 +47,41 @@ enum ReplayRunner {
         var escalation = EscalationFSM.initialState(at: t0)
         var result = ReplayResult(traceId: trace.traceId, finalEscalation: escalation)
 
+        // IF-INT-05's contract object is Incident + EscalationState (12 line 23). The replay
+        // constructs a real Incident so VV-110 validates it — not just the journal records.
+        var openIncident: Incident? = nil
+
         func applyTransition(_ input: FSMInput, at: Timestamp) throws {
             let r = try EscalationFSM.transition(escalation, input: input, now: at)
             // Write-ahead: journal record first, always (ADR-105).
             result.journal.append(r.record)
             result.log.append(DecisionLogEntry(at: at, kind: "transition", transition: r.record))
             escalation = r.newState
+            if var inc = openIncident {
+                inc.escalation = escalation
+                inc.timeline.append(.transition(escalation))
+                if escalation.state == .RESOLVED {
+                    inc.resolvedAt = at
+                    if case .resolve(let res) = input { inc.resolution = res }
+                    result.incidents.append(inc)
+                    openIncident = nil
+                } else {
+                    openIncident = inc
+                }
+            }
         }
 
-        let events = trace.events.sorted { $0.at.monotonicMs < $1.at.monotonicMs }
+        // Stable order: ties on monotonicMs keep original file order (offset), so the decision
+        // log — and therefore its hash — is fully specified even for same-timestamp events.
+        // Without this, Swift's non-stable sort could reorder ties across builds and silently
+        // flip a life-critical outcome (wearer-cancel honored vs. family alerted).
+        let events = trace.events.enumerated()
+            .sorted { a, b in
+                a.element.at.monotonicMs != b.element.at.monotonicMs
+                    ? a.element.at.monotonicMs < b.element.at.monotonicMs
+                    : a.offset < b.offset
+            }
+            .map { $0.element }
         for event in events {
             // Persisted deadlines fire on time passing, before the event is processed.
             if let d = escalation.deadlineAt,
@@ -84,6 +111,10 @@ enum ReplayRunner {
 
                 if decision.action == .countdown, escalation.state == .IDLE {
                     try applyTransition(.suspect, at: event.at)
+                    // Open the Incident at SUSPECTED (before the countdown transition mutates it).
+                    openIncident = Incident(
+                        id: ids.nextId(), wearerId: trace.wearerId, openedAt: event.at,
+                        cause: decision.id, escalation: escalation, stateSnapshot: state)
                     try applyTransition(.startCountdown(seconds: decision.countdownSeconds ?? 0), at: event.at)
                 }
             }
@@ -109,6 +140,10 @@ enum ReplayRunner {
                 }
             }
         }
+
+        // An incident that never resolved (trace ends in COUNTDOWN/ALERTING/ESCALATING) is still
+        // a real object crossing IF-INT-05 — record it so VV-110 validates it too.
+        if let inc = openIncident { result.incidents.append(inc) }
 
         result.finalEscalation = escalation
         return result

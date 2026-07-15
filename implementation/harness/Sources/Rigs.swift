@@ -12,6 +12,9 @@ struct DeterminismTraceResult: Codable {
     var runs: Int
     var hashes: [String]
     var identical: Bool
+    var logEntries: Int          // 0 ⇒ nothing was exercised (NOT a determinism pass)
+    var baselineHash: String?    // committed golden hash, if any
+    var baselineStatus: String   // MATCH | CHANGED | NO_BASELINE | REBASELINED
 }
 
 struct DeterminismReport: Codable {
@@ -20,7 +23,7 @@ struct DeterminismReport: Codable {
     var runAt: String
     var toolchain: String
     var traces: [DeterminismTraceResult]
-    var status: String // PASS | FAIL
+    var status: String // PASS | FAIL | BLOCKED | NOT-EXECUTED
     var note: String
 }
 
@@ -44,26 +47,62 @@ struct ContractReport: Codable {
 
 enum Rigs {
 
-    static func determinism(traces: [Trace], runs: Int = 3, toolchain: String) throws -> DeterminismReport {
+    /// VV-101. `runs` MUST be ≥ 2 — one run cannot demonstrate repeatability. A golden
+    /// `baseline` (traceId → committed hash) turns "repeatable" into "repeatable AND unchanged":
+    /// any decision-path change flips a trace to CHANGED and the rig to FAIL, unless `rebaseline`
+    /// is set (a deliberate act). A trace whose decision log is empty is NOT-EXERCISED, never a
+    /// silent PASS (the hash of "[]" proves nothing).
+    static func determinism(traces: [Trace], runs: Int = 3, toolchain: String,
+                            baseline: [String: String] = [:], rebaseline: Bool = false) throws -> DeterminismReport
+    {
+        precondition(runs >= 2, "determinism needs ≥2 runs to mean anything")
         var results: [DeterminismTraceResult] = []
         for trace in traces {
             var hashes: [String] = []
+            var entries = 0
             for _ in 0..<runs {
                 let result = try ReplayRunner.run(trace)
+                entries = result.log.count
                 hashes.append(SHA256.hexDigest(of: try ReplayRunner.canonicalLogData(result)))
             }
             let identical = Set(hashes).count == 1
-            results.append(DeterminismTraceResult(traceId: trace.traceId, runs: runs,
-                                                  hashes: hashes, identical: identical))
+            let hash = hashes.first ?? ""
+            let expected = baseline[trace.traceId]
+            let baselineStatus: String
+            if rebaseline { baselineStatus = "REBASELINED" }
+            else if expected == nil { baselineStatus = "NO_BASELINE" }
+            else if expected == hash { baselineStatus = "MATCH" }
+            else { baselineStatus = "CHANGED" }
+            results.append(DeterminismTraceResult(
+                traceId: trace.traceId, runs: runs, hashes: hashes, identical: identical,
+                logEntries: entries, baselineHash: expected, baselineStatus: baselineStatus))
         }
-        let pass = results.allSatisfy(\.identical) && !results.isEmpty
+
+        let exercised = results.filter { $0.logEntries > 0 }
+        let anyNonIdentical = exercised.contains { !$0.identical }
+        let anyChanged = exercised.contains { $0.baselineStatus == "CHANGED" }
+        let anyMissingBaseline = !rebaseline && exercised.contains { $0.baselineStatus == "NO_BASELINE" }
+
+        let status: String
+        var note: String
+        if results.isEmpty {
+            status = "NOT-EXECUTED"; note = "No traces supplied."
+        } else if exercised.isEmpty {
+            // e.g. a vacuous corpus that produces no decisions — determinism of nothing is meaningless.
+            status = "BLOCKED"
+            note = "No trace produced a non-empty decision log; there is nothing whose determinism can be asserted."
+        } else if anyNonIdentical {
+            status = "FAIL"; note = "At least one exercised trace was non-identical across \(runs) runs — the decision path is nondeterministic."
+        } else if anyChanged {
+            status = "FAIL"; note = "At least one trace's decision-log hash differs from the committed golden baseline. If this change is intended, re-run with --rebaseline to update baseline/golden-hashes.json deliberately."
+        } else if anyMissingBaseline {
+            status = "BLOCKED"; note = "An exercised trace has no committed golden baseline; VV-101 cannot certify it is unchanged. Run --rebaseline once to establish the baseline."
+        } else {
+            status = "PASS"; note = "All \(exercised.count) exercised trace(s) are identical across \(runs) runs and match the committed golden baseline (SRS-402, ADR-104/109)."
+        }
         return DeterminismReport(
             runAt: ISO8601DateFormatter().string(from: Date()),
-            toolchain: toolchain,
-            traces: results,
-            status: pass ? "PASS" : "FAIL",
-            note: "Phase-0 scope: same-machine repeatability across \(runs) fresh runs per trace. "
-                + "Cross-platform bit-identity (macOS vs Windows CI) is asserted once CI has both runners.")
+            toolchain: toolchain, traces: results, status: status, note: note)
     }
 
     static func contracts(traces: [Trace], schemas: ContractSchemas) throws -> ContractReport {
@@ -121,7 +160,8 @@ enum Rigs {
             }
             counts["IF-INT-04", default: 0] += result.decisions.count
 
-            // IF-INT-05 — journal: write-ahead durable records, seq strictly increasing, legal edges only.
+            // IF-INT-05 — journal + Incident/EscalationState (12 line 23: contract object is
+            // "Incident v1 + EscalationState v1", not just the journal records).
             var lastSeq = 0
             for rec in result.journal {
                 journalViolations += try schemas.validate(rec, against: "TransitionRecord")
@@ -136,38 +176,72 @@ enum Rigs {
                         path: "\(trace.traceId)/seq\(rec.seq)", message: "illegal FSM edge \(edge) (Blueprint A6)"))
                 }
             }
-            counts["IF-INT-05", default: 0] += result.journal.count
+            for inc in result.incidents {
+                journalViolations += try schemas.validate(inc, against: "Incident")
+            }
+            journalViolations += try schemas.validate(result.finalEscalation, against: "EscalationState")
+            // Count only genuine IF-INT-05 activity (journal records + incidents); the trivial
+            // final IDLE state is validated but not counted, so a fall-free corpus honestly
+            // reports IF-INT-05 as NOT_EXERCISED rather than manufacturing conformance.
+            counts["IF-INT-05", default: 0] += result.journal.count + result.incidents.count
         }
 
+        // Per-interface status: VIOLATIONS beats NOT_EXERCISED beats CONFORMS. An interface
+        // that was SUPPOSED to carry objects but carried zero is NOT_EXERCISED, never CONFORMS —
+        // absence of evidence is not conformance (the vacuous-gate fix, AUDIT-002).
         func report(_ id: String, _ violations: [SchemaViolation], notes: String? = nil) -> InterfaceReport {
-            InterfaceReport(id: id, contractVersion: "v1",
-                            status: violations.isEmpty ? "CONFORMS" : "VIOLATIONS",
-                            objectsChecked: counts[id] ?? 0, violations: violations, notes: notes)
+            let n = counts[id] ?? 0
+            let status: String
+            if !violations.isEmpty { status = "VIOLATIONS" }
+            else if n == 0 { status = "NOT_EXERCISED" }
+            else { status = "CONFORMS" }
+            return InterfaceReport(id: id, contractVersion: "v1", status: status,
+                                   objectsChecked: n, violations: violations, notes: notes)
         }
 
-        var interfaces = [
+        // The Phase-0 exit gate covers exactly the five internal interfaces (14 Part B). Each MUST
+        // be exercised by a real corpus; the remaining 14 interfaces have no producer yet and are
+        // honestly NOT_EXERCISED — they do NOT count toward PASS, and they are NOT hidden.
+        let required = [
             report("IF-INT-01", evidenceViolations),
             report("IF-INT-02", stateViolations),
             report("IF-INT-03", riskViolations),
             report("IF-INT-04", decisionViolations),
             report("IF-INT-05", journalViolations),
+        ]
+        let deferred = [
             InterfaceReport(id: "IF-INT-06", contractVersion: "v1", status: "NOT_EXERCISED",
                             objectsChecked: 0, violations: [],
-                            notes: "Coverage Monitor arrives in its own phase; no producer exists yet."),
+                            notes: "Coverage Monitor arrives in its own phase; no producer exists yet (14 Part B)."),
+            InterfaceReport(id: "IF-PLT-*/IF-NET-*/IF-HUM-*", contractVersion: "per 12", status: "NOT_EXERCISED",
+                            objectsChecked: 0, violations: [],
+                            notes: "Platform, network, and human interfaces gain producers in Phases 1–7 (14 Part B)."),
         ]
-        interfaces.append(InterfaceReport(
-            id: "IF-PLT-*/IF-NET-*/IF-HUM-*", contractVersion: "per 12", status: "NOT_EXERCISED",
-            objectsChecked: 0, violations: [],
-            notes: "Platform, network, and human interfaces gain producers/consumers in Phases 1–7; the rig extends per phase (14 Part B)."))
+        let interfaces = required + deferred
 
-        let exercisedAllConform = interfaces
-            .filter { $0.status != "NOT_EXERCISED" }
-            .allSatisfy { $0.status == "CONFORMS" }
+        // Doc-13 taxonomy (PASS/FAIL/BLOCKED/NOT-EXECUTED), scoped to the Phase-0-required set:
+        //   FAIL    — any required interface has VIOLATIONS
+        //   BLOCKED — any required interface was NOT_EXERCISED (a corpus that certifies nothing)
+        //   PASS    — all five required interfaces CONFORM on real objects; deferred stay NOT_EXERCISED
+        let anyViolation = required.contains { $0.status == "VIOLATIONS" }
+        let anyRequiredNotExercised = required.contains { $0.status == "NOT_EXERCISED" }
+        let status: String
+        let note: String
+        if anyViolation {
+            status = "FAIL"
+            note = "At least one Phase-0-required interface (IF-INT-01…05) has contract violations."
+        } else if anyRequiredNotExercised {
+            let empties = required.filter { $0.status == "NOT_EXERCISED" }.map(\.id).joined(separator: ", ")
+            status = "BLOCKED"
+            note = "The corpus did not exercise every Phase-0-required interface — no objects crossed \(empties). "
+                + "A gate that certifies un-exercised interfaces proves nothing; supply a corpus that drives all of IF-INT-01…05 (AUDIT-002 vacuous-gate fix)."
+        } else {
+            status = "PASS"
+            note = "All five Phase-0-required interfaces (IF-INT-01…05) conform on real objects (Interface Spec 12). "
+                + "The other 14 interfaces are NOT_EXERCISED by design — no producer exists until later phases (14 Part B); they are reported, not hidden."
+        }
         return ContractReport(
             runAt: ISO8601DateFormatter().string(from: Date()),
-            interfaces: interfaces,
-            status: exercisedAllConform ? "PASS" : "FAIL",
-            note: "Phase-0 scope per 14 Part B: rig operational, internal interfaces IF-INT-01…05 exercised. "
-                + "Full 19-interface conformance (13 exit criterion) accrues as later phases bring producers to life.")
+            interfaces: interfaces, status: status, note: note)
     }
 }

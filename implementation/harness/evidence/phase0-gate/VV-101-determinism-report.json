@@ -1,47 +1,59 @@
 {
   "evidencePackage" : "determinism report (hash comparison)",
-  "note" : "Phase-0 scope: same-machine repeatability across 3 fresh runs per trace. Cross-platform bit-identity (macOS vs Windows CI) is asserted once CI has both runners.",
-  "runAt" : "2026-07-14T19:28:43Z",
+  "note" : "All 4 exercised trace(s) are identical across 3 runs and match the committed golden baseline (SRS-402, ADR-104\/109).",
+  "runAt" : "2026-07-15T13:54:34Z",
   "status" : "PASS",
   "toolchain" : "swift-windows",
   "traces" : [
     {
+      "baselineHash" : "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
+      "baselineStatus" : "MATCH",
       "hashes" : [
         "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
         "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
         "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf"
       ],
       "identical" : true,
+      "logEntries" : 11,
       "runs" : 3,
       "traceId" : "trace-001-platform-fall-unresponsive"
     },
     {
+      "baselineHash" : "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
+      "baselineStatus" : "MATCH",
       "hashes" : [
-        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0",
-        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0",
-        "c3f994e472fbdb6e7772dfc231843422ce24a69708ede41da2d5854ccf77d9f0"
+        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
+        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
+        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34"
       ],
       "identical" : true,
+      "logEntries" : 12,
       "runs" : 3,
       "traceId" : "trace-002-fall-wearer-cancels"
     },
     {
+      "baselineHash" : "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481",
+      "baselineStatus" : "MATCH",
       "hashes" : [
         "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481",
         "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481",
         "4ef1a6681ca41a813246bd6a7efe26c6ce592fc5a802bf43b211307f31f1c481"
       ],
       "identical" : true,
+      "logEntries" : 9,
       "runs" : 3,
       "traceId" : "trace-003-adl-quiet-day"
     },
     {
+      "baselineHash" : "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
+      "baselineStatus" : "MATCH",
       "hashes" : [
         "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
         "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
         "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17"
       ],
       "identical" : true,
+      "logEntries" : 9,
       "runs" : 3,
       "traceId" : "trace-004-gap-markers"
     }

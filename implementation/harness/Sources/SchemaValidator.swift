@@ -108,15 +108,27 @@ struct ContractSchemas {
 
         if let object = json as? [String: Any] {
             if let required = schema["required"] as? [String] {
-                for key in required where object[key] == nil {
-                    violations.append(SchemaViolation(path: "\(path).\(key)", message: "required property missing"))
+                for key in required {
+                    // A present-but-null required field is still missing (AUDIT-002: JSONSerialization
+                    // decodes JSON null as NSNull, not absence, so `== nil` alone let null slip through).
+                    if object[key] == nil || object[key] is NSNull {
+                        violations.append(SchemaViolation(path: "\(path).\(key)", message: "required property missing or null"))
+                    }
                 }
             }
             if let properties = schema["properties"] as? [String: Any] {
                 for (key, sub) in properties {
-                    if let value = object[key], let subSchema = sub as? [String: Any] {
+                    if let value = object[key], !(value is NSNull), let subSchema = sub as? [String: Any] {
                         check(value, schema: subSchema, path: "\(path).\(key)", violations: &violations)
                     }
+                }
+                // Strict-by-default when a schema declares its properties: an object carrying a key
+                // the schema does not name is drift (a Swift field added without updating 08B/the
+                // transcription). This is the additive half of "contract drift detection" the
+                // validator previously ignored (AUDIT-002). Bare `{"type":"object"}` sub-objects
+                // (no declared properties) are exempt — they are intentionally opaque.
+                for key in object.keys where properties[key] == nil {
+                    violations.append(SchemaViolation(path: "\(path).\(key)", message: "unknown property not declared in schema (contract drift)"))
                 }
             }
         }

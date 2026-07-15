@@ -19,6 +19,17 @@ public struct Timestamp: Codable, Hashable, Comparable, Sendable {
     }
 
     public func adding(milliseconds: Int64) -> Timestamp {
-        Timestamp(monotonicMs: monotonicMs + milliseconds, wallMs: wallMs + milliseconds)
+        Timestamp(monotonicMs: Timestamp.saturatingAdd(monotonicMs, milliseconds),
+                  wallMs: Timestamp.saturatingAdd(wallMs, milliseconds))
+    }
+
+    /// Saturating add — clamps at the Int64 bounds instead of trapping (AUDIT-002 Story-2 fix:
+    /// unchecked `+` traps the whole process on a schema-valid trace with an extreme timestamp;
+    /// a safety core must never crash on adversarial-but-valid input). Clamping toward the far
+    /// future keeps a deadline in the future, which errs toward alerting, not toward silence.
+    static func saturatingAdd(_ a: Int64, _ b: Int64) -> Int64 {
+        let (sum, overflow) = a.addingReportingOverflow(b)
+        if !overflow { return sum }
+        return b >= 0 ? Int64.max : Int64.min
     }
 }

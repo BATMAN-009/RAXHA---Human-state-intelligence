@@ -40,7 +40,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-05",
-      "objectsChecked" : 8,
+      "objectsChecked" : 10,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -49,7 +49,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-06",
-      "notes" : "Coverage Monitor arrives in its own phase; no producer exists yet.",
+      "notes" : "Coverage Monitor arrives in its own phase; no producer exists yet (14 Part B).",
       "objectsChecked" : 0,
       "status" : "NOT_EXERCISED",
       "violations" : [
@@ -59,7 +59,7 @@
     {
       "contractVersion" : "per 12",
       "id" : "IF-PLT-*\/IF-NET-*\/IF-HUM-*",
-      "notes" : "Platform, network, and human interfaces gain producers\/consumers in Phases 1–7; the rig extends per phase (14 Part B).",
+      "notes" : "Platform, network, and human interfaces gain producers in Phases 1–7 (14 Part B).",
       "objectsChecked" : 0,
       "status" : "NOT_EXERCISED",
       "violations" : [
@@ -67,8 +67,8 @@
       ]
     }
   ],
-  "note" : "Phase-0 scope per 14 Part B: rig operational, internal interfaces IF-INT-01…05 exercised. Full 19-interface conformance (13 exit criterion) accrues as later phases bring producers to life.",
-  "runAt" : "2026-07-14T19:28:43Z",
+  "note" : "All five Phase-0-required interfaces (IF-INT-01…05) conform on real objects (Interface Spec 12). The other 14 interfaces are NOT_EXERCISED by design — no producer exists until later phases (14 Part B); they are reported, not hidden.",
+  "runAt" : "2026-07-15T13:54:34Z",
   "status" : "PASS",
   "vv" : "VV-110"
 }

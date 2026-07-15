@@ -67,13 +67,16 @@ public enum EscalationFSM {
         EscalationState(state: .IDLE, enteredAt: at, deadlineAt: nil, seq: 0, fsmVersion: fsmVersion)
     }
 
-    /// A deadline is expired if EITHER clock leg has passed it. Monotonic governs within a
-    /// boot; the wall leg catches deadlines that expired across a reboot (monotonic clocks
-    /// reset at boot, so the monotonic comparison is meaningless there). A forward wall-clock
-    /// jump can expire a deadline early — that errs toward alerting, the direction doctrine
-    /// requires (SRS-504).
+    /// Within a single boot the MONOTONIC clock is authoritative and never jumps — so
+    /// expiry is monotonic-only. (AUDIT-002 Story-2 fix: the previous `|| wallMs >= …` OR-rule
+    /// let a forward wall-clock jump — NTP correction, DST, a user changing the clock — fire a
+    /// live countdown EARLY and alert family before the wearer's cancel window elapsed (H-02).)
+    /// Cross-boot expiry is NOT decided here: a persisted monotonic deadline is meaningless after
+    /// a reboot (the clock resets), and the wall clock is unreliable too (dead-RTC → 1970). That
+    /// case belongs to `recover()`, and doing it *correctly* needs a persisted boot-session id —
+    /// see RFC-008. This function is only ever valid for same-boot comparisons.
     public static func isExpired(deadline: Timestamp, now: Timestamp) -> Bool {
-        now.monotonicMs >= deadline.monotonicMs || now.wallMs >= deadline.wallMs
+        now.monotonicMs >= deadline.monotonicMs
     }
 
     /// Pure transition: (state, input, now) → new state + journal record. No I/O, no clock,
@@ -122,16 +125,31 @@ public enum EscalationFSM {
         return TransitionResult(newState: newState, record: record)
     }
 
-    /// Reboot recovery (D11; SRS-501/504; the VV-106 behavior, unit-testable now):
-    /// resume from the persisted journal state. A deadline that expired while the device
-    /// was dead FAILS TOWARD ALERTING — never silently back to IDLE.
+    /// Reboot recovery (D11; SRS-501/504). CONSERVATIVE INTERIM pending RFC-008.
+    ///
+    /// A device that reboots inside a live COUNTDOWN or ALERTING cannot know how much time
+    /// really elapsed while it was dead: the monotonic clock reset to ~0, and the wall clock may
+    /// be wrong (dead-RTC boots at 1970). AUDIT-002 proved that the old wall-clock fallback
+    /// silently resumed such states and let the deadline become *unexpirable for days* — a
+    /// missed real emergency (H-01). Neither clock can decide this correctly without a persisted
+    /// boot-session identifier that distinguishes "this deadline is from a previous boot" from
+    /// "this deadline is later this same boot" — that is RFC-008.
+    ///
+    /// Until RFC-008 lands, safety decides the tie: recovering a timed state **fails toward
+    /// alerting** (H-01 miss ≫ H-02 false alarm; SRS-504). The cost — a false alarm if the device
+    /// merely restarted the app mid-countdown with the wearer fine — is accepted, documented
+    /// debt (Notebook-A), to be removed by RFC-008's boot-session id (which will restore accurate
+    /// resume-vs-escalate). A safety countdown that survives a reboot must never be able to
+    /// silently NOT fire.
     public static func recover(persisted: EscalationState, now: Timestamp) throws -> TransitionResult? {
         switch persisted.state {
         case .COUNTDOWN, .ALERTING:
-            if let d = persisted.deadlineAt, isExpired(deadline: d, now: now) {
-                return try transition(persisted, input: .deadlineExpired, now: now)
-            }
-            return nil // deadline still ahead: resume with the same persisted deadline
+            // Cannot prove the wearer is safe across a reboot → escalate. `deadlineExpired` is a
+            // legal edge from both COUNTDOWN (→ALERTING) and ALERTING (→ESCALATING). The persisted
+            // deadline is treated as reached because we cannot prove it was not.
+            let reached = Timestamp(monotonicMs: max(now.monotonicMs, persisted.deadlineAt?.monotonicMs ?? now.monotonicMs),
+                                    wallMs: now.wallMs)
+            return try transition(persisted, input: .deadlineExpired, now: reached)
         default:
             return nil // stable states resume as-is
         }

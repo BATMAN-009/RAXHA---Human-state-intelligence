@@ -83,24 +83,52 @@ final class EscalationFSMTests: XCTestCase {
         XCTAssertEqual(s.state, .ALERTING)
     }
 
-    func testRecoveryResumesUnexpiredCountdown() throws {
-        let persisted = EscalationState(
-            state: .COUNTDOWN, enteredAt: ts(2000), deadlineAt: ts(32000),
-            seq: 2, fsmVersion: fsmVersion)
-        let outcome = try EscalationFSM.recover(persisted: persisted, now: ts(10000))
-        XCTAssertNil(outcome, "unexpired countdown must resume with its persisted deadline")
-    }
+    // CONSERVATIVE INTERIM (AUDIT-002 Story-2, pending RFC-008): recover() cannot know how much
+    // time really elapsed across a reboot, so it fails toward alerting rather than risk silent
+    // non-protection (H-01). Both a still-ahead deadline and an across-reboot one escalate.
+    func testRecoveryOfTimedStateFailsTowardAlerting() throws {
+        // "Unexpired by monotonic" — but recover cannot trust that across a reboot, so it escalates.
+        let ahead = EscalationState(state: .COUNTDOWN, enteredAt: ts(2000), deadlineAt: ts(32000),
+                                    seq: 2, fsmVersion: fsmVersion)
+        XCTAssertEqual(try EscalationFSM.recover(persisted: ahead, now: ts(10000))?.newState.state, .ALERTING,
+                       "a recovered COUNTDOWN must fail toward alerting — safety cannot be assumed across a reboot (RFC-008)")
 
-    func testRecoveryFailsTowardAlertingAcrossReboot() throws {
-        // Reboot: monotonic clock RESET to a small value; only the wall leg shows expiry.
-        let persisted = EscalationState(
+        // Dead-RTC reboot (the AUDIT-002 CRITICAL): wall reset to ~1970, monotonic reset. The old
+        // code silently resumed and NEVER fired. It must now escalate regardless of clock state.
+        let deadRTC = EscalationState(
             state: .COUNTDOWN, enteredAt: ts(2000),
             deadlineAt: Timestamp(monotonicMs: 32000, wallMs: 1_784_073_632_000),
             seq: 2, fsmVersion: fsmVersion)
-        let bootNow = Timestamp(monotonicMs: 500, wallMs: 1_784_073_700_000)
-        let outcome = try EscalationFSM.recover(persisted: persisted, now: bootNow)
-        XCTAssertEqual(outcome?.newState.state, .ALERTING,
-                       "a deadline that expired while the device was dead must fail toward alerting (SRS-504)")
+        let bootNow1970 = Timestamp(monotonicMs: 5000, wallMs: 5000) // RTC reset to epoch
+        XCTAssertEqual(try EscalationFSM.recover(persisted: deadRTC, now: bootNow1970)?.newState.state, .ALERTING,
+                       "dead-RTC reboot must not leave a countdown unexpirable — it must escalate (SRS-504)")
+
+        // Stable states resume as-is.
+        let acked = EscalationState(state: .ACKNOWLEDGED, enteredAt: ts(2000), seq: 4, fsmVersion: fsmVersion)
+        XCTAssertNil(try EscalationFSM.recover(persisted: acked, now: ts(10000)))
+    }
+
+    func testForwardWallJumpDoesNotFireCountdownEarly() throws {
+        // H-02 fix: a forward wall-clock jump must NOT expire a live countdown before its
+        // monotonic deadline. Deadline is at monotonic 32000; now is monotonic 10000 (not reached)
+        // but the wall clock has jumped far past. Expiry must be refused.
+        let s = EscalationState(state: .COUNTDOWN, enteredAt: ts(2000),
+                                deadlineAt: Timestamp(monotonicMs: 32000, wallMs: 1_784_073_632_000),
+                                seq: 2, fsmVersion: fsmVersion)
+        let wallJumped = Timestamp(monotonicMs: 10000, wallMs: 9_999_999_999_999)
+        XCTAssertFalse(EscalationFSM.isExpired(deadline: s.deadlineAt!, now: wallJumped),
+                       "a forward wall-clock jump must not expire a monotonic deadline early (H-02)")
+        XCTAssertThrowsError(try EscalationFSM.transition(s, input: .deadlineExpired, now: wallJumped)) {
+            XCTAssertEqual($0 as? TransitionError, .deadlineNotReached)
+        }
+    }
+
+    func testSaturatingAddDoesNotTrapOnOverflow() {
+        // A schema-valid but extreme timestamp must not crash the safety core.
+        let extreme = Timestamp(monotonicMs: Int64.max - 5, wallMs: Int64.max - 5)
+        let result = extreme.adding(milliseconds: 1000)
+        XCTAssertEqual(result.monotonicMs, Int64.max, "overflow must saturate, not trap")
+        XCTAssertEqual(result.wallMs, Int64.max)
     }
 
     func testJournalRecordsCarrySequenceAndVersion() throws {
