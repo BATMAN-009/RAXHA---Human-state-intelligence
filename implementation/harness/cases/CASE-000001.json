@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "case-v0.1",
+  "caseId": "CASE-000001",
+  "title": "Platform fall, unresponsive wearer - must escalate",
+  "traceId": "trace-001-platform-fall-unresponsive",
+  "subject": {
+    "profile": "elder-alone"
+  },
+  "groundTruth": {
+    "outcome": "EMERGENCY",
+    "basis": "synthetic_design",
+    "notes": "Designed canonical H-01 shape: platform fall event followed by no wearer response."
+  },
+  "expected": {
+    "version": 1,
+    "outcome": "guardian_escalation",
+    "statePath": [
+      "SUSPECTED",
+      "COUNTDOWN",
+      "ALERTING",
+      "ESCALATING"
+    ],
+    "mustNever": [
+      "suppression of escalation by context confidence"
+    ],
+    "derivedFrom": [
+      "SRS-403",
+      "SRS-501",
+      "D17",
+      "H-01"
+    ],
+    "review": {
+      "reviewedBy": "pair-architect (Claude), founder execution charter 2026-07-21",
+      "date": "2026-07-21",
+      "reason": "Initial migration from 6-trace corpus; expectations transcribed from trace prose descriptions + SRS/doctrine derivations, v1."
+    }
+  },
+  "pinnedBehavior": {
+    "goldenHash": "36a6c783f38bcdc72d7bcc23ebe04c39d4c25f9df51b7ca345b8ec25668a6607",
+    "baselineRef": "harness/baseline/golden-hashes.json"
+  },
+  "adjudication": {
+    "status": "NOT_EXECUTED",
+    "note": "Ground-truth adjudication NOT_EXECUTED: the CaseKit runner does not exist yet (I1 commit 2). Pin is live via VV-101 (baseline MATCH). The laboratory does not claim adjudications its instrument cannot yet perform."
+  },
+  "provenanceClass": "SIMULATED",
+  "links": {
+    "hazards": [
+      "H-01"
+    ],
+    "vv": [
+      "VV-101",
+      "VV-102"
+    ],
+    "doctrine": [
+      "D17"
+    ]
+  }
+}

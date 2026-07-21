@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "case-v0.1",
+  "caseId": "CASE-000005",
+  "title": "Predecessor stillness-veto fall (real incident) - zero suppression",
+  "traceId": "trace-005-predecessor-stillness-veto-fall",
+  "subject": {
+    "profile": "elder-alone",
+    "notes": "Real fall cancelled by predecessor Table-Mode/stillness veto 27s post-impact (AUDIT-003)."
+  },
+  "groundTruth": {
+    "outcome": "EMERGENCY",
+    "basis": "field_incident",
+    "notes": "An unconscious elder still wrist matched a watch-on-a-table profile; the alert was cancelled. The RFC-003 litmus."
+  },
+  "expected": {
+    "version": 1,
+    "outcome": "guardian_escalation",
+    "statePath": [
+      "SUSPECTED",
+      "COUNTDOWN",
+      "ALERTING",
+      "ESCALATING"
+    ],
+    "mustNever": [
+      "context/stillness veto of a life-critical event",
+      "suppression by degrees (confidence lowered below threshold)"
+    ],
+    "derivedFrom": [
+      "D17",
+      "RFC-003",
+      "SRS-403",
+      "H-01"
+    ],
+    "review": {
+      "reviewedBy": "pair-architect (Claude), founder execution charter 2026-07-21",
+      "date": "2026-07-21",
+      "reason": "Initial migration from 6-trace corpus; expectations transcribed from trace prose descriptions + SRS/doctrine derivations, v1."
+    }
+  },
+  "pinnedBehavior": {
+    "goldenHash": "a50a232f7ece40820575267e3817379230445b7172adaadef147d701301a6655",
+    "baselineRef": "harness/baseline/golden-hashes.json"
+  },
+  "adjudication": {
+    "status": "NOT_EXECUTED",
+    "note": "Ground-truth adjudication NOT_EXECUTED: the CaseKit runner does not exist yet (I1 commit 2). Pin is live via VV-101 (baseline MATCH). The laboratory does not claim adjudications its instrument cannot yet perform."
+  },
+  "provenanceClass": "REPLAY_DERIVED",
+  "links": {
+    "hazards": [
+      "H-01"
+    ],
+    "rfcs": [
+      "RFC-003"
+    ],
+    "vv": [
+      "VV-101",
+      "VV-102"
+    ],
+    "doctrine": [
+      "D17"
+    ],
+    "audits": [
+      "AUDIT-003"
+    ]
+  }
+}

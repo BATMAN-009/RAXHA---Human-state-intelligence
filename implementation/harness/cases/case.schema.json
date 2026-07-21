@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "case-v0.1",
+  "title": "RAXHA laboratory case file (case-v0.1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "caseId",
+    "title",
+    "traceId",
+    "subject",
+    "groundTruth",
+    "expected",
+    "pinnedBehavior",
+    "adjudication",
+    "provenanceClass",
+    "links"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "case-v0.1"
+    },
+    "caseId": {
+      "type": "string",
+      "pattern": "^CASE-[0-9]{6}$",
+      "description": "Permanent. Never reused, renamed, or deleted."
+    },
+    "title": {
+      "type": "string"
+    },
+    "traceId": {
+      "type": "string",
+      "description": "Executable input: a corpus trace replayed deterministically."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "groundTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "basis"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "EMERGENCY",
+            "NON_EMERGENCY",
+            "COVERAGE_LOSS",
+            "UNKNOWN"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "field_incident",
+            "synthetic_design",
+            "drill",
+            "hardware_observation"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "outcome",
+        "derivedFrom",
+        "review"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "outcome": {
+          "type": "string",
+          "description": "What the system SHOULD do, derived from requirements - never invented per-case."
+        },
+        "statePath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mustNever": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Forbidden behaviors (e.g. suppression of a life-critical event)."
+        },
+        "derivedFrom": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "SRS/doctrine/hazard IDs this expectation is derived from."
+        },
+        "review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reviewedBy",
+            "date",
+            "reason"
+          ],
+          "properties": {
+            "reviewedBy": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "history": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pinnedBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goldenHash",
+        "baselineRef"
+      ],
+      "properties": {
+        "goldenHash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "baselineRef": {
+          "const": "harness/baseline/golden-hashes.json"
+        }
+      }
+    },
+    "adjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "KNOWN_DEFICIENT",
+            "REGRESSION",
+            "BLOCKED",
+            "NOT_EXECUTED"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "linkedFixItem": {
+          "type": "string",
+          "description": "Required when status is KNOWN_DEFICIENT."
+        }
+      }
+    },
+    "provenanceClass": {
+      "enum": [
+        "SIMULATED",
+        "REPLAY_DERIVED",
+        "HARDWARE_VALIDATED",
+        "SIMULATOR_APPLE"
+      ]
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hazards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rfcs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "doctrine": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "audits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
