@@ -1,46 +1,61 @@
-# VVE-001 — Virtual Validation Environment (founder directive, 2026-07-21)
+# VVE-001 — Digital Validation Laboratory (founder directive, 2026-07-21; laboratory framing v2)
 
-> **Objective:** before physical watches arrive, the software behaves like a production system fed by simulated inputs; hardware later replaces *only* the device adapters. Any downstream code change at swap time = architecture failure.
-> **Evidence taxonomy (binding, on every artifact):** `SIMULATED` · `REPLAY-DERIVED` · `HARDWARE-VALIDATED`. The corpus `provenance` block (built for AUDIT-003's traces) already carries this; VVE extends it to every scenario, report, and dashboard view. **No artifact may blur the boundary.** Divergence between simulator and hardware becomes a new evidence artifact (per the SPIKE-002 pre-registration principle) — never a silent patch.
+> **Not a simulator. A laboratory.** Every experiment behaves exactly like owning watches, *except where reality cannot honestly be simulated*. The laboratory exists to answer one question: **"If the watches arrived today, what uncertainty would still remain?"** — and the answer must be: *only hardware uncertainty. Nothing else.* We replace physics, never truth.
+> **Founder success metric:** when SPIKE-002 begins, we are not building RAXHA — we are cross-examining it. The watches are witnesses; the laboratory is the courtroom; evidence decides.
+> **Evidence taxonomy (binding, machine-labeled on every artifact):** `SIMULATED` · `REPLAY-DERIVED` · `HARDWARE-VALIDATED`. The corpus `provenance` block carries it; the gate REJECTS unlabeled input. Simulator/hardware divergence becomes a new evidence artifact — never a silent patch.
 
-## What VVE-001 validates / cannot validate
+## Accepted architecture corrections (founder-ratified)
 
-**Validates (desk, CI-enforced):** state machine (FSM + write-ahead + recovery), incident pipeline, policy/risk decision spine, confidence propagation, replay determinism, guardian notification *routing logic*, escalation ladder timing logic, evidence collection, timeline reconstruction.
-**Cannot validate (hardware-only, isolated by design):** sensor accuracy/noise, battery, watchOS scheduling/background windows, real HealthKit latency, BLE/LTE behavior, hardware reliability. These are exactly pre-registered predictions P1–P7 — the VVE must never manufacture evidence for them.
+Mock at the **frozen port boundary**, not HealthKit APIs (Apple adapter exists only when Mac + hardware exist — swap step) · Health Connect **deferred** (no Android tier in frozen v1) · web-based lab console (platform reality) · **VV-111 adapter-swap invariance** as CI gate · simulators never manufacture evidence for pre-registered P1–P7 (hardware-only).
 
-## Deliverable map — existing vs new
+## What the laboratory validates / isolates as hardware-only
 
-| # | Directive deliverable | Already exists (Phase 0) | Gap VVE-001 builds |
-|---|---|---|---|
-| 1 | Virtual Watch Adapter | 8 frozen ports + IdSource; replay harness feeds traces through them | **Streaming-mode virtual adapters** (live feed, not just batch replay): accel/gyro/HR/HRV/battery/connectivity/worn-state simulators behind the ports |
-| 2 | HealthKit Simulator | Ports isolate core from HealthKit entirely | **Port-boundary mock** with full fault vocabulary: unavailable, permission-revoked, delayed/missing/duplicate samples. *True HK-signature mock deferred to macOS (Hardware Swap Plan step 1)* |
-| 3 | Health Connect Simulator | — | **DEFERRED** — no Android tier in frozen v1 scope (RFC-005/PDR); revisit at the Android RFC, not before |
-| 4 | Vital Generator | 4 synthetic + 2 real traces | **ScenarioKit**: deterministic generators (seeded, replay-stable) for the scenario library below |
-| 5 | Incident/Fall Injection | trace-005 (real cancelled fall) | `simulate*()` API: fall, soft-fall, trip, watch-drop, bed-collapse, running-stop, wheelchair-transfer, false/true-positive, unknown — each = a scenario constructor emitting frozen-schema events with expected-transition assertions |
-| 6 | Replay Dataset | 6-trace corpus + golden hashes + BLOCKED-on-vacuous gate | Scenario library lands as corpus expansion (`SIMULATED` provenance), gated by the same rigs + deliberate rebaseline discipline |
-| 7 | Scenario Library | — | Normal-day · workout · stress (HR↑/HRV↓) · fall→stillness→recovery · unconscious (spike→stillness→HR-decline) · night-charging/non-wear · unknown (timeout/battery/permission) |
-| 8 | Watch Debug Dashboard | — | **Web-based console** (platform reality: SwiftUI won't run on this desk): sliders (battery/HR/HRV/motion/GPS/connectivity/charging/worn/permissions) → scenario JSON → harness run → rendered output |
-| 9 | State Timeline Viewer | Decision log (hash-verified) | Timeline renderer over the decision log — every transition, deadline, veto-check, confidence value, with provenance labels |
-| 10 | Guardian Simulator | Ladder/contracts specified (IF-HUM-01…05) | Guardian-behavior model behind delivery ports: ack/ignore/delay/mute profiles → exercises ladder timing + dead-man logic |
-| 11 | Notification Simulator | Delivery ports defined | Deterministic delivery simulator incl. failure modes (undelivered, delayed, duplicate) → exactly-once-effect tests |
-| 12 | Hardware Swap Plan | Port architecture is the plan's skeleton | §Swap below |
+**Validates (desk, CI-enforced):** FSM + write-ahead + recovery, incident pipeline, policy/risk decision spine, confidence propagation, replay determinism, ladder/dead-man timing logic, guardian routing, evidence collection, timeline reconstruction, audit viewing.
+**Hardware-only (isolated, pre-registered):** sensor physics/noise, battery, watchOS scheduling, HealthKit latency, BLE/LTE, hardware reliability = predictions P1–P7. The lab must never contain a mock whose behavior would resolve them.
 
-## Architecture rule (the invariance gate)
+## Laboratory model
 
-Virtual adapters, replay feed, and (future) hardware adapters implement the **same ports**. New CI test — **VV-111 adapter-swap invariance**: identical scenario through virtual-streaming adapter vs batch replay ⇒ byte-identical decision log. When hardware arrives, the same scenario re-run on-device becomes the third leg; any divergence = evidence artifact + register row, not a patch.
+### 1. Case files, not scenarios
+Every experiment is a **numbered case file** (`cases/CASE-0001-kitchen-fall.json` + report), containing: subject profile · scenario · **ground truth** (what actually happened) · **expected outcome** (what SHOULD happen, derived from SRS/hazard controls, never invented per-case) · expected evidence chain · **pinned behavior** (regression hash of what the current verified system DOES) · provenance label · regression-protected flag.
+**Two expectations, never blurred:** ground-truth assertion vs pinned regression. Legal statuses: `PASS` (matches both) · `KNOWN-DEFICIENT` (matches pin, fails ground truth — visible, tracked, linked to its fix item) · `REGRESSION` (diverged from pin) · `BLOCKED`. A case may never be made green by editing its expectation — expectation changes are reviewed like code (claims-under-configuration-control, gate-record artifact 9).
+**Growth rule:** every production bug, every hardware divergence, every field incident becomes a permanent case. The predecessor's incidents already seeded cases 001–006 (the existing corpus). Target: hundreds.
 
-## Build increments (each = own PR, gated by existing CI)
+### 2. Guardian World
+People are simulated, not just watches. Guardian behavior profiles behind the delivery ports: *always-responds · busy-parent · night-shift · elder-spouse · poor-network · muted · delayed-ack · never-acks · wrong-contact · travelling*. Each profile × each escalation scenario = a case exercising ladder timing, retries, reminders, dead-man, exactly-once-effect. The question every run answers: **does the ladder still behave correctly when humans don't?**
 
-1. **I1 — ScenarioKit + scenario library**: deterministic generators → traces in frozen 08B schema, `SIMULATED` provenance, corpus-gated (expect NO_BASELINE → deliberate rebaseline).
-2. **I2 — Injection API** (`simulate*()`) + expected-transition assertions as XCTests.
-3. **I3 — Streaming virtual adapters** (sensors, battery, connectivity, worn) + VV-111 invariance rig.
-4. **I4 — Guardian + notification simulators** → ladder/dead-man/exactly-once tests.
-5. **I5 — Web debug dashboard + timeline viewer** (drives the harness binary; renders decision logs; every view stamped with provenance).
-6. **I6 — Hardware Swap Plan execution** (macOS/Xcode stage): Apple adapters conforming HealthKit/CoreMotion/CMFallDetection to the ports; VVE scenarios re-run on-device; divergences → new SPIKE artifacts.
+### 3. TimeController (already load-bearing, now exercised)
+The core is *already* wall-clock-free (VV-101 determinism; deadlines are persisted data, not timers — Blueprint A6). The lab adds the controller: compress 24 h → 30 s, dilate 2 min → real-time, step, pause, jump (incl. clock-drift and reboot-epoch cases feeding RFC-008). Every timeout/retry/reminder/dead-man fires under injected time. Any code found depending on wall-clock = architecture violation, filed as a finding.
+
+### 4. FaultKit
+Deliberate failure injection, every fault a permanent regression case: battery-death mid-COUNTDOWN · BLE loss · watch reboot · GPS unavailable · permission revoked · HR delayed · accelerometer freeze · duplicate samples · out-of-order samples · clock drift · corrupted payload · replay interruption. (Reboot/clock cases double as RFC-008 test beds.)
+
+### 5. DiffEngine — the three-leg protocol
+`Replay ⇄ Simulation ⇄ Live Hardware → Diff Report`. Report format: Expected → Observed → decision difference → confidence difference → latency difference → **attribution**: `INPUT-DELTA` (sensor/timing reality — expected on hardware; becomes evidence, feeds P1–P7 scoring) vs `LOGIC-DELTA` (same inputs, different decision — **architecture failure, zero tolerance**).
+**Sharpened success metric:** decisions on identical inputs = **100% identical** (VV-111); input/timing deltas are not failures — they are the hardware findings the lab exists to isolate. "95% identical" as a blended number is banned: it would average a catastrophe into a pass.
+
+### 6. Automatic evidence packages
+Every run auto-generates: case ID · inputs · ground truth · decision · confidence · timeline · evidence used · **evidence missing** · latency · status · regression hash · provenance label. No manual documentation. The existing hash-verified decision log is the substrate; the package is its structured rendering.
+
+### 7. Audit viewer + lab console
+Web console driving the harness: `simulate*()` buttons and sliders (battery/HR/HRV/motion/GPS/connectivity/charging/worn/permissions/Family-Setup/contacts) → case run → full pipeline visible: sensor stream → FSM transitions → confidence → guardian timeline → ladder → dead-man → ack → replay archive → evidence package → decision log. Every view stamped with its provenance label.
+
+## Hardware Arrival Day protocol
+
+One action: **Run All (simulation) → Run All (Apple Watch) → Diff Report.** Zero LOGIC-DELTA = the architecture succeeded. Every INPUT-DELTA = a numbered finding scored against the pre-registered predictions. Development does not restart on arrival day; cross-examination begins.
+
+## Build increments (each = own PR, CI-gated)
+
+1. **I1 — CaseKit + case schema + scenario library** (normal-day, workout, stress, fall, soft-fall, unconscious, night-charging, unknown — as case files w/ `SIMULATED` provenance; corpus-gated, deliberate rebaseline).
+2. **I2 — Injection API + FaultKit** (`simulate*()`, 12 fault classes, expected-transition assertions as tests).
+3. **I3 — Streaming virtual adapters + TimeController + VV-111** invariance rig.
+4. **I4 — Guardian World + notification simulator** (profiles × ladder; exactly-once; dead-man).
+5. **I5 — Lab console + audit viewer + auto evidence packages.**
+6. **I6 — DiffEngine three-leg + Hardware Swap** (macOS stage: Apple adapters conform to ports; arrival-day protocol executed; divergences → findings).
 
 ## Success criteria (honest form)
 
-- Every core + pipeline behavior exercised by ≥1 scenario; coverage **measured and reported**, not asserted (the "90%" is a target the coverage report either shows or doesn't).
-- VV-111 green: adapter swap changes zero downstream behavior.
-- Every simulated artifact machine-labeled `SIMULATED — NOT HARDWARE EVIDENCE`; the gate REJECTS unlabeled scenario input (extends the AUDIT-002 falsifiability repair).
-- P1–P7 pre-registered predictions remain hardware-only: the VVE contains **no** mock whose behavior would resolve them.
+- Every core/pipeline behavior exercised by ≥1 case; coverage **measured and reported**, never asserted.
+- VV-111 green: adapter swap ⇒ byte-identical decision logs on identical inputs.
+- KNOWN-DEFICIENT visible on the dashboard — the lab surfaces deficiencies; it never launders them.
+- Every simulated artifact labeled `SIMULATED — NOT HARDWARE EVIDENCE`; unlabeled input is REJECTED.
+- P1–P7 remain unresolved by the lab; on arrival day they are resolved by witnesses only.
