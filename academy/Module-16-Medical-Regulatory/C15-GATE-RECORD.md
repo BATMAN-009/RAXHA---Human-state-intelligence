@@ -41,6 +41,13 @@ Closing principles recorded verbatim: *"If the evidence no longer supports the c
 
 > Doctrine/Canon amendments arising from artifacts 7–8 follow the frozen Academy's RFC path (supersede, never edit) — they do not retro-edit chapters.
 
+## Founder Principle 0 (advisor-recommended for permanent preservation; founder-endorsed at gate close)
+
+> **Evidence outranks conviction.**
+> Conviction is sufficient to start a company. Only evidence earns the right for the company to continue making the same claims. When evidence weakens, claims contract before confidence expands. Every metric that justifies shipping must also be capable of justifying stopping.
+
+*Standing note: if Principle 0 is to enter the frozen Doctrine itself (as D00), that is the Academy's first superseding-RFC — the freeze policy's mechanism, used as designed. Until then, this record is its permanent home, and the engineering tier may cite it directly.*
+
 ## Effect
 
 - **Academy v1.0 FROZEN** as of this record (README freeze policy: immutable, versioned, RFC-superseded only).
