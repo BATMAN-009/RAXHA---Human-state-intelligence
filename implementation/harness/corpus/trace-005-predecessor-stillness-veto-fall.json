@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-005-predecessor-stillness-veto-fall",
+  "description": "FIRST REAL-INCIDENT TRACE (from the predecessor, AUDIT-003). A fall followed by machine-like stillness and no response. The predecessor's Table-Mode/stillness veto CANCELLED a real detected fall 27s after impact (MotionManager field note) - an unconscious elder's still wrist matched its 'watch on a table' profile. In the new architecture this exact context must NEVER suppress escalation (D17 veto contract; the RFC-003 litmus): expects SUSPECTED -> COUNTDOWN -> ALERTING -> ESCALATING with zero suppression.",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "provenance": {
+    "source": "AUDIT-003 appendix, sub-report 1 (watch safety path): predecessor MotionManager.swift:2585-2593 stillness veto + ThreatDetectionManager.swift:1441-1444 GATE 1; field note of a real fall cancelled 27s post-impact (MonitoringCoordinator.swift:853-856)",
+    "whyExists": "The exact failure shape the predecessor shipped: post-fall stillness reads as 'not a person' and vetoes the alert. The new pipeline must treat stillness after impact as corroboration, never exculpation.",
+    "whatItGuards": "D17 corollary (context may never independently suppress a life-critical event) / H-01 / seeds VV-102 veto suite; RFC-003 evidence",
+    "addedBy": "pair-architect (Claude), founder-commissioned corpus conversion",
+    "date": "2026-07-21"
+  },
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000501",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.05],
+        "unit": "activity_index",
+        "quality": 0.95,
+        "confidence": { "value": 0.85, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1050, "wallMs": 1784073601050 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000502",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "platform_detection",
+        "kind": "platform_fall",
+        "values": [1.0],
+        "unit": "detection",
+        "quality": 0.9,
+        "confidence": { "value": 0.85, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 5000, "wallMs": 1784073605000 },
+        "receivedAt": { "monotonicMs": 5010, "wallMs": 1784073605010 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 32000, "wallMs": 1784073632000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000503",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "motion",
+        "values": [0.0],
+        "unit": "activity_index",
+        "quality": 0.98,
+        "confidence": { "value": 0.9, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 32000, "wallMs": 1784073632000 },
+        "receivedAt": { "monotonicMs": 32050, "wallMs": 1784073632050 }
+      }
+    },
+    { "at": { "monotonicMs": 40000, "wallMs": 1784073640000 }, "action": "tick" },
+    { "at": { "monotonicMs": 170000, "wallMs": 1784073770000 }, "action": "tick" }
+  ]
+}

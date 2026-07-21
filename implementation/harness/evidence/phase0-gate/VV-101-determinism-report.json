@@ -1,7 +1,7 @@
 {
   "evidencePackage" : "determinism report (hash comparison)",
-  "note" : "All 4 exercised trace(s) are identical across 3 runs and match the committed golden baseline (SRS-402, ADR-104\/109).",
-  "runAt" : "2026-07-21T05:46:57Z",
+  "note" : "All 6 exercised trace(s) are identical across 3 runs and match the committed golden baseline (SRS-402, ADR-104\/109).",
+  "runAt" : "2026-07-21T08:23:20Z",
   "status" : "PASS",
   "toolchain" : "swift-windows",
   "traces" : [
@@ -56,6 +56,32 @@
       "logEntries" : 9,
       "runs" : 3,
       "traceId" : "trace-004-gap-markers"
+    },
+    {
+      "baselineHash" : "a50a232f7ece40820575267e3817379230445b7172adaadef147d701301a6655",
+      "baselineStatus" : "MATCH",
+      "hashes" : [
+        "a50a232f7ece40820575267e3817379230445b7172adaadef147d701301a6655",
+        "a50a232f7ece40820575267e3817379230445b7172adaadef147d701301a6655",
+        "a50a232f7ece40820575267e3817379230445b7172adaadef147d701301a6655"
+      ],
+      "identical" : true,
+      "logEntries" : 13,
+      "runs" : 3,
+      "traceId" : "trace-005-predecessor-stillness-veto-fall"
+    },
+    {
+      "baselineHash" : "ead1bd453ef970939ebd4b58fc23f0f2558f4c21eb08c877bca5803a23658423",
+      "baselineStatus" : "MATCH",
+      "hashes" : [
+        "ead1bd453ef970939ebd4b58fc23f0f2558f4c21eb08c877bca5803a23658423",
+        "ead1bd453ef970939ebd4b58fc23f0f2558f4c21eb08c877bca5803a23658423",
+        "ead1bd453ef970939ebd4b58fc23f0f2558f4c21eb08c877bca5803a23658423"
+      ],
+      "identical" : true,
+      "logEntries" : 12,
+      "runs" : 3,
+      "traceId" : "trace-006-predecessor-coverage-blackout"
     }
   ],
   "vv" : "VV-101"

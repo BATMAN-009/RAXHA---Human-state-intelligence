@@ -14,11 +14,23 @@ struct TraceEvent: Codable {
     var action: String?
 }
 
+/// Corpus governance: every trace should say where it came from, why it exists, and what
+/// it guards — so nobody deletes it later because "it looks redundant" (founder backlog
+/// item; AUDIT-003 migration plan). Optional and additive: trace-v0.1 decoding unchanged.
+struct TraceProvenance: Codable {
+    var source: String        // e.g. "AUDIT-003 predecessor field incident, 2026-07-06"
+    var whyExists: String     // the scenario this trace pins
+    var whatItGuards: String  // doctrine/hazard/VV line it protects
+    var addedBy: String
+    var date: String          // YYYY-MM-DD
+}
+
 struct Trace: Codable {
     var schemaVersion: String
     var traceId: String
     var description: String
     var wearerId: UUID
+    var provenance: TraceProvenance? = nil
     var events: [TraceEvent]
 }
 
