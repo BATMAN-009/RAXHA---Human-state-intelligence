@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "case-v0.1",
+  "caseId": "CASE-000002",
+  "title": "Fall, wearer cancels during countdown - must resolve without escalation",
+  "traceId": "trace-002-fall-wearer-cancels",
+  "subject": {
+    "profile": "elder-alone"
+  },
+  "groundTruth": {
+    "outcome": "NON_EMERGENCY",
+    "basis": "synthetic_design",
+    "notes": "Wearer is fine and cancels; agency honored."
+  },
+  "expected": {
+    "version": 1,
+    "outcome": "resolved_no_escalation",
+    "statePath": [
+      "SUSPECTED",
+      "COUNTDOWN",
+      "RESOLVED"
+    ],
+    "mustNever": [
+      "escalation after valid wearer cancel"
+    ],
+    "derivedFrom": [
+      "IF-HUM-01",
+      "H-02"
+    ],
+    "review": {
+      "reviewedBy": "pair-architect (Claude), founder execution charter 2026-07-21",
+      "date": "2026-07-21",
+      "reason": "Initial migration from 6-trace corpus; expectations transcribed from trace prose descriptions + SRS/doctrine derivations, v1."
+    }
+  },
+  "pinnedBehavior": {
+    "goldenHash": "bec0212ec8881b2a3cfee52db46adb0defc9f66f331e2c114b3c61c2b64f1217",
+    "baselineRef": "harness/baseline/golden-hashes.json"
+  },
+  "adjudication": {
+    "status": "NOT_EXECUTED",
+    "note": "Ground-truth adjudication NOT_EXECUTED: the CaseKit runner does not exist yet (I1 commit 2). Pin is live via VV-101 (baseline MATCH). The laboratory does not claim adjudications its instrument cannot yet perform."
+  },
+  "provenanceClass": "SIMULATED",
+  "links": {
+    "hazards": [
+      "H-02"
+    ],
+    "vv": [
+      "VV-101"
+    ]
+  }
+}

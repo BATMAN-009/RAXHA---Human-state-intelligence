@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "case-v0.1",
+  "caseId": "CASE-000004",
+  "title": "Evidence gap markers - unknown state, no false alarm",
+  "traceId": "trace-004-gap-markers",
+  "subject": {
+    "profile": "elder-alone"
+  },
+  "groundTruth": {
+    "outcome": "COVERAGE_LOSS",
+    "basis": "synthetic_design",
+    "notes": "Gaps in evidence stream; silence must not be read as OK."
+  },
+  "expected": {
+    "version": 1,
+    "outcome": "unknown_state_surfaced",
+    "statePath": [
+      "IDLE",
+      "UNKNOWN"
+    ],
+    "mustNever": [
+      "treating gap as OK",
+      "false escalation from gap alone"
+    ],
+    "derivedFrom": [
+      "H-04",
+      "SRS-701"
+    ],
+    "review": {
+      "reviewedBy": "pair-architect (Claude), founder execution charter 2026-07-21",
+      "date": "2026-07-21",
+      "reason": "Initial migration from 6-trace corpus; expectations transcribed from trace prose descriptions + SRS/doctrine derivations, v1."
+    }
+  },
+  "pinnedBehavior": {
+    "goldenHash": "c7ef2ba86abb5beb9c164ef0c91a92451ad6d7a5d63eada1a7f569c4d1e3bc17",
+    "baselineRef": "harness/baseline/golden-hashes.json"
+  },
+  "adjudication": {
+    "status": "NOT_EXECUTED",
+    "note": "Ground-truth adjudication NOT_EXECUTED: the CaseKit runner does not exist yet (I1 commit 2). Pin is live via VV-101 (baseline MATCH). The laboratory does not claim adjudications its instrument cannot yet perform."
+  },
+  "provenanceClass": "SIMULATED",
+  "links": {
+    "hazards": [
+      "H-04"
+    ],
+    "vv": [
+      "VV-101"
+    ]
+  }
+}

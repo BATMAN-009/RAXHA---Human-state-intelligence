@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "case-v0.1",
+  "caseId": "CASE-000006",
+  "title": "Predecessor 1h45m battery blackout (real incident) - coverage loss surfaced, no false alarm",
+  "traceId": "trace-006-predecessor-coverage-blackout",
+  "subject": {
+    "profile": "elder-alone",
+    "notes": "Real low-battery silent blackout from the predecessor (AUDIT-003)."
+  },
+  "groundTruth": {
+    "outcome": "COVERAGE_LOSS",
+    "basis": "field_incident",
+    "notes": "Sensing silently dead for 1h45m; the H-04 shape: silent coverage loss must become visible."
+  },
+  "expected": {
+    "version": 1,
+    "outcome": "coverage_loss_surfaced",
+    "statePath": [
+      "IDLE",
+      "UNKNOWN"
+    ],
+    "mustNever": [
+      "treating blackout as OK",
+      "false escalation from blackout alone"
+    ],
+    "derivedFrom": [
+      "H-04",
+      "SRS-701",
+      "RFC-006"
+    ],
+    "review": {
+      "reviewedBy": "pair-architect (Claude), founder execution charter 2026-07-21",
+      "date": "2026-07-21",
+      "reason": "Initial migration from 6-trace corpus; expectations transcribed from trace prose descriptions + SRS/doctrine derivations, v1."
+    }
+  },
+  "pinnedBehavior": {
+    "goldenHash": "ead1bd453ef970939ebd4b58fc23f0f2558f4c21eb08c877bca5803a23658423",
+    "baselineRef": "harness/baseline/golden-hashes.json"
+  },
+  "adjudication": {
+    "status": "NOT_EXECUTED",
+    "note": "Ground-truth adjudication NOT_EXECUTED: the CaseKit runner does not exist yet (I1 commit 2). Pin is live via VV-101 (baseline MATCH). The laboratory does not claim adjudications its instrument cannot yet perform."
+  },
+  "provenanceClass": "REPLAY_DERIVED",
+  "links": {
+    "hazards": [
+      "H-04"
+    ],
+    "rfcs": [
+      "RFC-006"
+    ],
+    "vv": [
+      "VV-101"
+    ],
+    "audits": [
+      "AUDIT-003"
+    ]
+  }
+}
