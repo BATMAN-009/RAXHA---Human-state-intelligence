@@ -14,15 +14,17 @@
 
 The complete engineering document chain exists, is internally consistent, and is traceable end-to-end:
 **Doctrine (D01–D22) → North Star → PRD → PDR-000 → ADR-000 (+Traceability Matrix) → Blueprint → 08A Responsibility Matrix → 08B Data Dictionary → SRS → 10A/10B Hazards & Controls → ADR-101–112 → Interface Spec → V&V Plan (VV-1xx–8xx + VA register) → Readiness Roadmap.**
-Phase 0's *entry* conditions (14 Part B) are met: the foundation is locked (00A), the vocabulary is frozen (08B-A), every subsystem has an owner boundary (08A), every hazard has controls with VV coverage defined (10B→13), and no RFCs are open against the foundation. Phase 0's *exit* gates (VV-101/VV-110 operational) are what Phase 0 builds.
+Phase 0's *entry* conditions (14 Part B) are met: the foundation is locked (00A), the vocabulary is frozen (08B-A), every subsystem has an owner boundary (08A), every hazard has controls with VV coverage defined (10B→13).
+
+**Refresh (2026-07-21) — correcting claims that reality overtook:** the original "no RFCs are open against the foundation" claim went stale the day AUDIT-001 landed. Current truth: RFC-001/002/003/006/008 FOUNDER-DECIDED (accept, pending APPLIED), RFC-004/005/007 partially/conditionally decided — none contradicts Phase-0 scope; all are tracked in the [RFC Register](rfcs/RFC-REGISTER.md). Phase 0 itself was **built and verified under founder instruction** (exit gate VV-101/VV-110 green after AUDIT-002 verifier repair; baseline `phase0-baseline`, repository phase archived at `repository-phase-complete`). This certificate therefore now records an authorization exercised-and-validated rather than pending — the signature below remains the acceptance of responsibility, not a permission slip.
 
 ## Remaining blockers
 
 **For Phase 0 code: none.**
 
 Open items, tracked, **not blockers to Phase 0**:
-1. **Competency-15 mastery gate** — the Academy v1.0 freeze condition (intellectual foundation). Closes Phase 1; strongly recommended before implementation *consumes* the Academy as frozen reference. Owner: Founder.
-2. **Founder approval below** — this certificate is *prepared*, not *in force*, until signed.
+1. ~~Competency-15 mastery gate~~ — **CLOSED 2026-07-21: founder PASSED under adversarial defense; Academy v1.0 FROZEN** ([gate record](../academy/Module-16-Medical-Regulatory/C15-GATE-RECORD.md)).
+2. **Founder approval below** — this certificate is *prepared*, not *in force*, until signed. This is now the **only** open human gate item.
 3. Phase-gate items that are execution-dependent by design (VV suites go from defined → PASS as phases run; TD register expiries armed; VA register goes live at Shadow).
 
 ## Approved by
