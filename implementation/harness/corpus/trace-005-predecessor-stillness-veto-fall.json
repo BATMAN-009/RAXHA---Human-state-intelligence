@@ -5,8 +5,8 @@
   "wearerId": "0A000000-0000-4000-8000-000000000001",
   "provenance": {
     "source": "AUDIT-003 appendix, sub-report 1 (watch safety path): predecessor MotionManager.swift:2585-2593 stillness veto + ThreatDetectionManager.swift:1441-1444 GATE 1; field note of a real fall cancelled 27s post-impact (MonitoringCoordinator.swift:853-856)",
-    "whyExists": "The exact failure shape the predecessor shipped: post-fall stillness reads as 'not a person' and vetoes the alert. The new pipeline must treat stillness after impact as corroboration, never exculpation.",
-    "whatItGuards": "D17 corollary (context may never independently suppress a life-critical event) / H-01 / seeds VV-102 veto suite; RFC-003 evidence",
+    "whyExists": "HISTORICAL INCIDENT SHAPE, NOT PROOF OF ABSENCE. The exact failure shape the predecessor shipped: post-fall stillness reads as 'not a person' and vetoes the alert. The predecessor's stillness-veto implementation is absent here only because the corresponding Policy subsystem is not yet implemented; a future implementation could introduce an equivalent failure. This trace therefore establishes the regression case that Phase-4 verification (VV-102) must satisfy - a passing replay today is a tripwire armed, not a bug-class disproven.",
+    "whatItGuards": "D17 corollary (context may never independently suppress a life-critical event) / H-01 / the regression case VV-102 must satisfy at Phase 4; RFC-003 evidence",
     "addedBy": "pair-architect (Claude), founder-commissioned corpus conversion",
     "date": "2026-07-21"
   },
