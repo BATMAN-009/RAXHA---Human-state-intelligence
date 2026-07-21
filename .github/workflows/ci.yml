@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Swift (Windows)
         if: runner.os == 'Windows'
-        uses: compnerd/gha-setup-swift@main
+        uses: compnerd/gha-setup-swift@eeda069c5bc95ac8a9ac5cea7d4f588ae5420ca5 # pinned: @main flaked on identical code (run 29815878077 fail vs 29815891739 pass, 2026-07-21) - the gate's toolchain must not be a moving target
         with:
           swift-version: swift-6.3.3-release
           swift-build: 6.3.3-RELEASE # 'tag' input is deprecated -> 'swift-build'
