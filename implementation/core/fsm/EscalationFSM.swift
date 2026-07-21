@@ -16,7 +16,10 @@ import Foundation
 // native fall flow. Those live in Policy/Response (Phases 4–5). This machine only
 // defines what the states ARE and how they may legally move.
 
-public let fsmVersion = "fsm-0.1.0-phase0"
+// 0.1.0 → 0.2.0: recovery/expiry semantics changed (isExpired monotonic-only; recover()
+// fails toward alerting pending RFC-008). Version identifiers exist to distinguish behavior —
+// same-stamp/different-behavior would be a forensic ambiguity (D20/ADR-015; PR #1 delta review).
+public let fsmVersion = "fsm-0.2.0-phase0"
 
 public enum FSMInput: Codable, Hashable, Sendable {
     /// A PolicyDecision chose to act; Incident opens in SUSPECTED.

@@ -1,17 +1,17 @@
 {
   "evidencePackage" : "determinism report (hash comparison)",
   "note" : "All 4 exercised trace(s) are identical across 3 runs and match the committed golden baseline (SRS-402, ADR-104\/109).",
-  "runAt" : "2026-07-15T13:54:34Z",
+  "runAt" : "2026-07-21T05:46:57Z",
   "status" : "PASS",
   "toolchain" : "swift-windows",
   "traces" : [
     {
-      "baselineHash" : "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
+      "baselineHash" : "36a6c783f38bcdc72d7bcc23ebe04c39d4c25f9df51b7ca345b8ec25668a6607",
       "baselineStatus" : "MATCH",
       "hashes" : [
-        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
-        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf",
-        "3d1da044c40659b0239006c45e0f928971b7d5ca34eaba8852f2c866c8961ebf"
+        "36a6c783f38bcdc72d7bcc23ebe04c39d4c25f9df51b7ca345b8ec25668a6607",
+        "36a6c783f38bcdc72d7bcc23ebe04c39d4c25f9df51b7ca345b8ec25668a6607",
+        "36a6c783f38bcdc72d7bcc23ebe04c39d4c25f9df51b7ca345b8ec25668a6607"
       ],
       "identical" : true,
       "logEntries" : 11,
@@ -19,12 +19,12 @@
       "traceId" : "trace-001-platform-fall-unresponsive"
     },
     {
-      "baselineHash" : "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
+      "baselineHash" : "bec0212ec8881b2a3cfee52db46adb0defc9f66f331e2c114b3c61c2b64f1217",
       "baselineStatus" : "MATCH",
       "hashes" : [
-        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
-        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34",
-        "04a412de89d3fb9a95ca7d81754604bf1c673e7649404bbaaf5dea003479ec34"
+        "bec0212ec8881b2a3cfee52db46adb0defc9f66f331e2c114b3c61c2b64f1217",
+        "bec0212ec8881b2a3cfee52db46adb0defc9f66f331e2c114b3c61c2b64f1217",
+        "bec0212ec8881b2a3cfee52db46adb0defc9f66f331e2c114b3c61c2b64f1217"
       ],
       "identical" : true,
       "logEntries" : 12,
