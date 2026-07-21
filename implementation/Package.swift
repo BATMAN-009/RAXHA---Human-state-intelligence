@@ -13,16 +13,30 @@ let package = Package(
             name: "RaxhaCore",
             path: "core"
         ),
-        // Replay harness + VV-101/VV-110 rigs (Phase 0's exit gate lives here).
-        .executableTarget(
-            name: "raxha-harness",
+        // Replay harness + VV-101/VV-110 rigs, as a LIBRARY so the verifier itself is testable
+        // (AUDIT-002: the gate must not live where no test can reach it).
+        .target(
+            name: "RaxhaHarnessKit",
             dependencies: ["RaxhaCore"],
             path: "harness/Sources"
+        ),
+        // The CLI is a thin shell over RaxhaHarnessKit — argument parsing + file I/O only.
+        .executableTarget(
+            name: "raxha-harness",
+            dependencies: ["RaxhaCore", "RaxhaHarnessKit"],
+            path: "harness/CLI"
         ),
         .testTarget(
             name: "RaxhaCoreTests",
             dependencies: ["RaxhaCore"],
             path: "tests/RaxhaCoreTests"
+        ),
+        // Adversarial tests that CHALLENGE the rigs: they assert the gate REJECTS bad input
+        // (vacuous corpus, tampered baseline, corrupted objects), not merely that it passes.
+        .testTarget(
+            name: "HarnessTests",
+            dependencies: ["RaxhaCore", "RaxhaHarnessKit"],
+            path: "tests/HarnessTests"
         ),
     ]
 )

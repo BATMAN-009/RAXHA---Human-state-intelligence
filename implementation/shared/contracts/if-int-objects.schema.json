@@ -112,6 +112,22 @@
         "fsmVersion": { "type": "string", "minLength": 1 }
       }
     },
+    "Incident": {
+      "type": "object",
+      "required": ["id", "wearerId", "openedAt", "cause", "escalation", "stateSnapshot", "timeline"],
+      "properties": {
+        "id": { "type": "string" },
+        "wearerId": { "type": "string" },
+        "openedAt": { "$ref": "Timestamp" },
+        "cause": { "type": "string" },
+        "escalation": { "$ref": "EscalationState" },
+        "stateSnapshot": { "$ref": "HumanState" },
+        "location": { "type": "object" },
+        "timeline": { "type": "array" },
+        "resolvedAt": { "$ref": "Timestamp" },
+        "resolution": { "type": "string", "enum": ["user_cancel", "contact_ack", "services", "timeout_escalated", "false_alarm_confirmed"] }
+      }
+    },
     "DeviceCoverage": {
       "type": "object",
       "required": ["wearerId", "at", "protection", "wornState", "battery", "links", "permissions", "gaps"],
