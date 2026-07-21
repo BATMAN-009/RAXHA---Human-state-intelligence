@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "trace-v0.1",
+  "traceId": "trace-006-predecessor-coverage-blackout",
+  "description": "SECOND REAL-INCIDENT TRACE (from the predecessor, AUDIT-003). The 2026-07-06 'bar night' blackout: protection went silently dark for 1h45m (gap_s=6620) at low battery - optical HR froze, then zeroed, and neither wearer nor guardian was ever told (predecessor KNOWN_LIMITATIONS L1). Representable half in Phase 0: a heart-rate stream, an explicit gap marker, 6620s of nothing, then resumption. Expects: unknown-widening on the gap (confidence 0, channels unknown - D13, VV-105 direction), NO false escalation from absence, and the gap visible in the decision log (absence must be evidence, never silence). The other half - guardian-facing coverage alerting/dead-man - is Phase 6+ (Coverage Monitor / ADR-106); this trace keeps that hole visible in evidence until then (D20).",
+  "wearerId": "0A000000-0000-4000-8000-000000000001",
+  "provenance": {
+    "source": "AUDIT-003 appendix, sub-report 4 (history mining): predecessor KNOWN_LIMITATIONS L1, 2026-07-06 20:15:47->22:01 IST, gap_s=6620, stuck_hr bpm=77->102->0 at 15%->10% battery; no on-watch or guardian-facing indication",
+    "whyExists": "The worst silent-coverage-loss incident the predecessor recorded: the system was dark for 105 minutes and nobody knew. The new pipeline must make absence itself first-class evidence.",
+    "whatItGuards": "D13 (absence never defaults to normal) / H-04 (silent coverage loss) / VV-105 unknown-widening; documents the Phase-6 Coverage/dead-man gap until ADR-106 lands",
+    "addedBy": "pair-architect (Claude), founder-commissioned corpus conversion",
+    "date": "2026-07-21"
+  },
+  "events": [
+    {
+      "at": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000601",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "heart_rate",
+        "values": [77.0],
+        "unit": "bpm",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 1000, "wallMs": 1784073601000 },
+        "receivedAt": { "monotonicMs": 1100, "wallMs": 1784073601100 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 61000, "wallMs": 1784073661000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000602",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "heart_rate",
+        "values": [77.0],
+        "unit": "bpm",
+        "quality": 0.4,
+        "confidence": { "value": 0.3, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 61000, "wallMs": 1784073661000 },
+        "receivedAt": { "monotonicMs": 61100, "wallMs": 1784073661100 }
+      }
+    },
+    {
+      "at": { "monotonicMs": 120000, "wallMs": 1784073720000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000603",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "derived",
+        "kind": "gap",
+        "values": [],
+        "unit": "marker",
+        "quality": 0.0,
+        "confidence": { "value": 0.0, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 120000, "wallMs": 1784073720000 },
+        "receivedAt": { "monotonicMs": 120000, "wallMs": 1784073720000 }
+      }
+    },
+    { "at": { "monotonicMs": 3430000, "wallMs": 1784077030000 }, "action": "tick" },
+    {
+      "at": { "monotonicMs": 6740000, "wallMs": 1784080340000 },
+      "evidence": {
+        "id": "E0000000-0000-4000-8000-000000000604",
+        "wearerId": "0A000000-0000-4000-8000-000000000001",
+        "source": "onboard_sensor",
+        "kind": "heart_rate",
+        "values": [70.0],
+        "unit": "bpm",
+        "quality": 0.9,
+        "confidence": { "value": 0.8, "calibrationMethod": "none", "calibrationVersion": "uncalibrated", "basis": "cold_start" },
+        "measuredAt": { "monotonicMs": 6740000, "wallMs": 1784080340000 },
+        "receivedAt": { "monotonicMs": 6740100, "wallMs": 1784080340100 }
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-01",
-      "objectsChecked" : 11,
+      "objectsChecked" : 18,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -13,7 +13,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-02",
-      "objectsChecked" : 11,
+      "objectsChecked" : 18,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -22,7 +22,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-03",
-      "objectsChecked" : 11,
+      "objectsChecked" : 18,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -31,7 +31,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-04",
-      "objectsChecked" : 11,
+      "objectsChecked" : 18,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -40,7 +40,7 @@
     {
       "contractVersion" : "v1",
       "id" : "IF-INT-05",
-      "objectsChecked" : 10,
+      "objectsChecked" : 15,
       "status" : "CONFORMS",
       "violations" : [
 
@@ -68,7 +68,7 @@
     }
   ],
   "note" : "All five Phase-0-required interfaces (IF-INT-01…05) conform on real objects (Interface Spec 12). The other 14 interfaces are NOT_EXERCISED by design — no producer exists until later phases (14 Part B); they are reported, not hidden.",
-  "runAt" : "2026-07-21T06:05:50Z",
+  "runAt" : "2026-07-21T08:23:20Z",
   "status" : "PASS",
   "vv" : "VV-110"
 }
