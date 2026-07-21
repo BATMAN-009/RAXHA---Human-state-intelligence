@@ -1,7 +1,7 @@
 {
   "evidencePackage" : "determinism report (hash comparison)",
   "note" : "All 4 exercised trace(s) are identical across 3 runs and match the committed golden baseline (SRS-402, ADR-104\/109).",
-  "runAt" : "2026-07-21T05:46:57Z",
+  "runAt" : "2026-07-21T06:05:50Z",
   "status" : "PASS",
   "toolchain" : "swift-windows",
   "traces" : [
